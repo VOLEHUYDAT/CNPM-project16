@@ -1,6 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+#Category
+class Category(models.Model):
+    sub_category = models.ForeignKey('self', on_delete=models.CASCADE, related_name= 'sub_categories', null=True, blank=True)
+    is_sub = models.BooleanField(default=False)
+    name = models.CharField(max_length=200, null=True)
+    slug = models.SlugField(max_length=200,unique=True)
+    def __str__(self):
+        return self.name
 #change forms register
 class CreateUserForm(UserCreationForm):
     class Meta:
@@ -10,9 +18,11 @@ class CreateUserForm(UserCreationForm):
 
 
 class Product(models.Model):
+    category = models.ManyToManyField(Category, related_name='product')
     name = models.CharField(max_length=200,null=True,blank=False)
     price = models.FloatField()
     media = models.ImageField(null=True,blank=True)
+    detail = models.TextField(null=True,blank=True)
 
     def __str__(self):
         return self.name 
