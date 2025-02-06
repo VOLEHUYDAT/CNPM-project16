@@ -70,10 +70,9 @@
                       Sản phẩm
                     </a>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="#">Sữa</a></li>
-                      <li><a class="dropdown-item" href="#">Lại là sữa</a></li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="#">Tiếp tục là sữa</a></li>
+                      {% for category in categories %}
+                        <li><a class="dropdown-item" href="{% url 'category' %}?category={{category.slug}}">{{category.name}}</a></li>
+                      {% endfor %}
                     </ul>
                   </li>
                   <li class="nav-item">
@@ -98,7 +97,7 @@
                       <p style="margin: 12px 4px 0px 4px ; font-size:18px;">Xin chào: {{user.username}}<a href="{% url 'logout' %}"><button style ="margin-left:10px; text-decoration:none;font-size:16px; ">Đăng xuất</button></a></p>
                       
                   {% else %}
-                      <p><a href="{% url 'register' %}">Đăng ký</a>  |  <a  href="{% url 'login' %}">Đăng nhập</a></p>
+                      <p style="margin: 12px 4px 0px 4px ; font-size:18px;"><a href="{% url 'register' %}">Đăng ký</a>  |  <a  href="{% url 'login' %}">Đăng nhập</a></p>
                   {% endif %}
                 </div>
             </div>
@@ -112,6 +111,8 @@
           {% block content_checkout%}{%endblock content_checkout%}
 
           {% block search%}{%endblock search%}
+          {% block category%}{%endblock category%}
+          {% block detail%}{%endblock detail%}
           <!-- footer -->
           <footer class="container-fluid bg-success text-center fixed-bottom p-2 mt-5">
             Project16
