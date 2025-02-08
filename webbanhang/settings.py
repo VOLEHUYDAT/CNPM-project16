@@ -132,3 +132,10 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'app/static/media')
+
+
+VNPAY_RETURN_URL = 'http://localhost:8000/payment_return'  # get from config
+VNPAY_PAYMENT_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # get from config
+VNPAY_API_URL = 'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction'
+VNPAY_TMN_CODE = '69TVT7II'  # Website ID in VNPAY System, get from config
+VNPAY_HASH_SECRET_KEY = 'VGFIVDQOOLSZD3GX7N581V4XU1IXEU49'  # Secret key for create checksum,get from config
