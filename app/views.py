@@ -186,7 +186,7 @@ def updateItem(request):
 
 
 def index(request):
-    return render(request, "payment/index.html", {"title": "Danh sách demo"})
+    return render(request, "payment/index.html", {"title": "Danh sách "})
 
 
 def hmacsha512(key, data):
@@ -309,36 +309,59 @@ def payment_return(request):
         vnp_BankCode = inputData['vnp_BankCode']
         vnp_CardType = inputData['vnp_CardType']
 
+        # Lưu thông tin thanh toán
         payment = Payment_VNPay.objects.create(
-            order_id = order_id,
-            amount = amount,
-            order_desc = order_desc,
-            vnp_TransactionNo = vnp_TransactionNo,
-            vnp_ResponseCode = vnp_ResponseCode 
+            order_id=order_id,
+            amount=amount,
+            order_desc=order_desc,
+            vnp_TransactionNo=vnp_TransactionNo,
+            vnp_ResponseCode=vnp_ResponseCode
         )
 
         if vnp.validate_response(settings.VNPAY_HASH_SECRET_KEY):
             if vnp_ResponseCode == "00":
-                return render(request, "payment/payment_return.html", {"title": "Kết quả thanh toán",
-                                                               "result": "Thành công", "order_id": order_id,
-                                                               "amount": amount,
-                                                               "order_desc": order_desc,
-                                                               "vnp_TransactionNo": vnp_TransactionNo,
-                                                               "vnp_ResponseCode": vnp_ResponseCode})
+                if request.user.is_authenticated:
+                    order = Order.objects.filter(customer=request.user, complete=False).first()
+                    if order:
+                        OrderItem.objects.filter(order=order).delete()
+                        order.delete()
+                        messages.success(request, "Giỏ hàng đã được xóa.")
+                
+                return render(request, "payment/payment_return.html", {
+                    "title": "Kết quả thanh toán",
+                    "result": "Thành công",
+                    "order_id": order_id,
+                    "amount": amount,
+                    "order_desc": order_desc,
+                    "vnp_TransactionNo": vnp_TransactionNo,
+                    "vnp_ResponseCode": vnp_ResponseCode
+                })
             else:
-                return render(request, "payment/payment_return.html", {"title": "Kết quả thanh toán",
-                                                               "result": "Lỗi", "order_id": order_id,
-                                                               "amount": amount,
-                                                               "order_desc": order_desc,
-                                                               "vnp_TransactionNo": vnp_TransactionNo,
-                                                               "vnp_ResponseCode": vnp_ResponseCode})
+                return render(request, "payment/payment_return.html", {
+                    "title": "Kết quả thanh toán",
+                    "result": "Lỗi",
+                    "order_id": order_id,
+                    "amount": amount,
+                    "order_desc": order_desc,
+                    "vnp_TransactionNo": vnp_TransactionNo,
+                    "vnp_ResponseCode": vnp_ResponseCode
+                })
         else:
-            return render(request, "payment/payment_return.html",
-                          {"title": "Kết quả thanh toán", "result": "Lỗi", "order_id": order_id, "amount": amount,
-                           "order_desc": order_desc, "vnp_TransactionNo": vnp_TransactionNo,
-                           "vnp_ResponseCode": vnp_ResponseCode, "msg": "Sai checksum"})
+            return render(request, "payment/payment_return.html", {
+                "title": "Kết quả thanh toán",
+                "result": "Lỗi",
+                "order_id": order_id,
+                "amount": amount,
+                "order_desc": order_desc,
+                "vnp_TransactionNo": vnp_TransactionNo,
+                "vnp_ResponseCode": vnp_ResponseCode,
+                "msg": "Sai checksum"
+            })
     else:
-        return render(request, "payment/payment_return.html", {"title": "Kết quả thanh toán", "result": ""})
+        return render(request, "payment/payment_return.html", {
+            "title": "Kết quả thanh toán",
+            "result": ""
+        })
 
 
 def get_client_ip(request):
@@ -459,3 +482,23 @@ def refund(request):
         response_json = {"error": f"Request failed with status code: {response.status_code}"}
 
     return render(request, "payment/refund.html", {"title": "Kết quả hoàn tiền giao dịch", "response_json": response_json})
+
+
+def payment_success(request):
+    if request.method == 'POST':
+        vnp_ResponseCode = request.POST.get('vnp_ResponseCode')
+
+        if vnp_ResponseCode == '00':
+            if request.user.is_authenticated:
+                order = Order.objects.filter(customer=request.user, complete=False).first()
+                if order:
+                    OrderItem.objects.filter(order=order).delete()  # Xóa tất cả các mục trong giỏ hàng
+                    order.delete()  # Xóa đơn hàng nếu cần
+                    messages.success(request, "Giỏ hàng đã được xóa.")
+            return redirect('home')  # Chuyển hướng về trang chính
+        else:
+            messages.error(request, "Thanh toán không thành công.")
+            return redirect('cart')  # Chuyển hướng về giỏ hàng hoặc trang khác
+    else:
+        messages.error(request, "Yêu cầu không hợp lệ.")
+        return redirect('cart')  # Chuyển hướng về giỏ hàng hoặc trang khác

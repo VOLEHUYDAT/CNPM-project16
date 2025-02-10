@@ -13,6 +13,7 @@ urlpatterns = [
     path('search/', views.search, name="search"),
     path('category/', views.category, name="category"),
     path('detail/', views.detail, name="detail"),
+    path('payment_success/', views.payment_success, name="payment_success"),
 
     path('pay',views.index, name='index'),
     path('payment',views.payment, name='payment'),

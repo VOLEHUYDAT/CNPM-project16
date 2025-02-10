@@ -1,5 +1,6 @@
 {% extends 'app/base.html' %}
 {% load static %}
+{% load humanize %}
 {% block banner_slider %}
 <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel" data-bs-interval="1000">
     <div class="carousel-indicators">
@@ -39,9 +40,9 @@
     <img class="thumbnail" src="{{product.ImageURL}}">
     <h6><strong>{{product.name}}</strong></h6>
     <hr>
-    <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to cart</button>
+    <button id="add-to-cart" data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to cart</button>
     <a class="btn btn-outline-success" href="{% url 'detail' %}?id={{product.id}}">View</a>
-    <h3 style="display: inline-block; float: right"><strong>${{product.price | floatformat:2}}$</strong></h3>
+    <h3 style="display: inline-block; float: right"><strong>{{product.price|intcomma}} VNĐ</strong></h3>
 
   </div>
   {% endfor %}

@@ -94,12 +94,23 @@
                 </div>
                 <div class="form-inline my-2 my-lg-0 lienket">
                   {% if user.username %}
-                      <p style="margin: 12px 4px 0px 4px ; font-size:18px;">Xin chào: {{user.username}}<a href="{% url 'logout' %}"><button style ="margin-left:10px; text-decoration:none;font-size:16px; ">Đăng xuất</button></a></p>
-                      
+                      <p style="margin: 12px 4px 0px 4px; font-size:18px;">
+                          Xin chào: {{ user.username }}
+                          <a href="{% url 'logout' %}">
+                              <button style="margin-left:10px; text-decoration:none; font-size:16px;">Đăng xuất</button>
+                          </a>
+                          {% if user.username == "admin" %}
+                              <a href="http://127.0.0.1:8000/admin/">
+                                  <button style="margin-left:10px; text-decoration:none; font-size:16px;">Quản trị</button>
+                              </a>
+                          {% endif %}
+                      </p>
                   {% else %}
-                      <p style="margin: 12px 4px 0px 4px ; font-size:18px;"><a href="{% url 'register' %}">Đăng ký</a>  |  <a  href="{% url 'login' %}">Đăng nhập</a></p>
+                      <p style="margin: 12px 4px 0px 4px; font-size:18px;">
+                          <a id="register" href="{% url 'register' %}">Đăng ký</a> | <a id="login" href="{% url 'login' %}">Đăng nhập</a>
+                      </p>
                   {% endif %}
-                </div>
+              </div>
             </div>
           </nav>
           <!--main body  -->
