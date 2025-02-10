@@ -33,7 +33,7 @@
                                         {% csrf_token %}
                                         
                                         <div data-mdb-input-init class="form-outline mb-4">
-                                            <label class="form-label" for="form3Example1cg" style="padding-right:42px">User  Name</label>
+                                            <label class="form-label" for="username" style="padding-right:42px">User  Name</label>
                                             {{ form.username }}
                                             {% if form.username.errors %}
                                                 <div class="text-danger">
@@ -43,7 +43,7 @@
                                         </div>
                                     
                                         <div data-mdb-input-init class="form-outline mb-4">
-                                            <label class="form-label" for="form3Example3cg" style="padding-right:47px">Your Email</label>
+                                            <label class="form-label" for="email" style="padding-right:47px">Your Email</label>
                                             {{ form.email }}
                                             {% if form.email.errors %}
                                                 <div class="text-danger">
@@ -53,17 +53,17 @@
                                         </div>
                                     
                                         <div data-mdb-input-init class="form-outline mb-4">
-                                            <label class="form-label" for="form3Example3cg" style="padding-right:9px">Your First Name</label>
+                                            <label class="form-label" for="firstname" style="padding-right:9px">Your First Name</label>
                                             {{ form.first_name }}
                                         </div>
                                     
                                         <div data-mdb-input-init class="form-outline mb-4">
-                                            <label class="form-label" for="form3Example3cg" style="padding-right:9px">Your Last Name</label>
+                                            <label class="form-label" for="lastname" style="padding-right:9px">Your Last Name</label>
                                             {{ form.last_name }}
                                         </div>
                                     
                                         <div data-mdb-input-init class="form-outline mb-4">
-                                            <label class="form-label" for="form3Example4cg" style="padding-right:53px">Password</label>
+                                            <label class="form-label" for="password1" style="padding-right:53px">Password</label>
                                             {{ form.password1 }}
                                             {% if form.password1.errors %}
                                                 <div class="text-danger">
@@ -73,7 +73,7 @@
                                         </div>
                                     
                                         <div data-mdb-input-init class="form-outline mb-4">
-                                            <label class="form-label" for="form3Example4cg">Repeat Password</label>
+                                            <label class="form-label" for="password2">Repeat Password</label>
                                             {{ form.password2 }}
                                             {% if form.password2.errors %}
                                                 <div class="text-danger">

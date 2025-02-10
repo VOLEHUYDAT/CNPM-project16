@@ -1,5 +1,6 @@
 {% extends 'app/base.html' %}
 {% load static %}
+{% load humanize %}
 {% block detail %}
 {% for product in products %}
 <div style="padding: 50px;" class="container mt-5 mb-5">
@@ -19,7 +20,7 @@
                           </div>
                           <div class="mt-4 mb-3">
                               <h5 class="text-uppercase">{{product.name}}</h5>
-                              <div class="price d-flex flex-row align-items-center"> <span class="act-price">{{product.price}}$</span>
+                              <div class="price d-flex flex-row align-items-center"> <span class="act-price">{{product.price|intcomma}} VNĐ</span>
                               </div>
                           </div>
                           <p class="about">{{product.detail}}</p>

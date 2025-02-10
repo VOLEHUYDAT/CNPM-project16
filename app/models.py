@@ -21,7 +21,7 @@ class CreateUserForm(UserCreationForm):
 class Product(models.Model):
     category = models.ManyToManyField(Category, related_name='product')
     name = models.CharField(max_length=200,null=True,blank=False)
-    price = models.FloatField()
+    price = models.BigIntegerField()
     media = models.ImageField(null=True,blank=True)
     detail = models.TextField(null=True,blank=True)
 
