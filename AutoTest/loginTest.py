@@ -22,7 +22,7 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "username"))
     )
-    username_input.send_keys("Huydat556") 
+    username_input.send_keys("Huydat552") 
     time.sleep(1)
 
     email_input = WebDriverWait(driver, 10).until(
@@ -64,7 +64,7 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "username"))
     )
-    username_input.send_keys("Huydat556") 
+    username_input.send_keys("Huydat552") 
     time.sleep(1)
     # Điền dữ liệu vào trường "password"
     password_input = driver.find_element(By.ID, "password")
@@ -104,6 +104,35 @@ try:
     print("Đã nhấn vào nút 'Add to cart' cho sản phẩm với ID:", product_id)
     time.sleep(2)
     #--------------------------------------------------
+
+    # Chờ cho hình ảnh có ID 'searched' xuất hiện và nhấn vào nó
+    search = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "searched"))
+    )
+    search.send_keys("Biomilk") 
+    time.sleep(1)
+
+    search = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.ID, "search"))
+    )
+    search.click()
+    print("Đã nhấn tìm kiếm.")
+    time.sleep(1)
+    #-----------------------------------------------
+    product_id = "1"
+
+    add_to_cart_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, f"//button[@data-product='{product_id}']"))
+    )
+    # Cuộn đến nút
+    driver.execute_script("arguments[0].scrollIntoView();", add_to_cart_button)
+    time.sleep(2)
+    # Đợi cho nút có thể click được
+    add_to_cart_button.click()
+    print("Đã nhấn vào nút 'Add to cart' cho sản phẩm với ID:", product_id)
+    time.sleep(1.5)
+
+    #--------------------------------------------------
     cart_icon = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.ID, "cart-icon"))
     )
@@ -116,7 +145,68 @@ try:
     )
     checkout.click()
     print("Đã nhấn Checkout.")
-    time.sleep(10)
+    time.sleep(3)
+
+    #----------------------------------------------------------------------
+    name_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "name"))
+    )
+    name_input.send_keys("Huydat") 
+    time.sleep(1)
+
+    email_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "email"))
+    )
+    email_input.send_keys("huydat13825@gmail.com") 
+    time.sleep(1)
+
+    address_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "address"))
+    )
+    address_input.send_keys("Phường 25, Bình Thạnh") 
+    time.sleep(1)
+
+    city_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "city"))
+    )
+    city_input.send_keys("Hồ Chí Minh") 
+    time.sleep(1)
+
+    state_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "state"))
+    )
+    state_input.send_keys("TP. Hồ Chí Minh") 
+    time.sleep(1)
+
+    phone_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "mobile"))
+    )
+    phone_input.send_keys("0987654321") 
+    time.sleep(1)
+    
+    country_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "country"))
+    )
+    country_input.send_keys("Việt Nam") 
+    time.sleep(1)
+    
+    # Nhấn nút "Payment"
+    payment_button = driver.find_element(By.NAME, "payment-button")
+    ActionChains(driver).move_to_element(payment_button).perform()
+
+    # Nhấn vào nút
+    payment_button.click()
+    print("Đã nhấn nút 'Payment'.")
+    #------------------------------------------------------------------
+    bank_code_select = driver.find_element(By.ID, 'bank_code')
+    bank_code_select.click()
+    ncb_option = driver.find_element(By.XPATH, "//option[@value='NCB']")
+    ncb_option.click()
+    time.sleep(2)
+    submit_button = driver.find_element(By.XPATH, "//button[@type='submit']")
+    submit_button.click()
+    #--------------------------------------------------------------
+    time.sleep(40)
 except Exception as e:
     print("Đã xảy ra lỗi:", e)
 

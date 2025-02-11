@@ -9,20 +9,14 @@ driver = webdriver.Chrome()
 
 try:
     # Mở trang web
-    driver.get("http://127.0.0.1:8000/")  # Thay đổi URL nếu cần
+    driver.get("http://127.0.0.1:8000/checkout/")  # Thay đổi URL nếu cần
     time.sleep(2)
 
-    register = WebDriverWait(driver, 10).until(
-    EC.element_to_be_clickable((By.ID, "register"))
-    )
-    register.click()
-    print("Đã nhấn vào register.")
-    time.sleep(1)
 
-    username_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.NAME, "username"))
+    name_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "name"))
     )
-    username_input.send_keys("Huydat3") 
+    name_input.send_keys("Huydat") 
     time.sleep(1)
 
     email_input = WebDriverWait(driver, 10).until(
@@ -31,34 +25,44 @@ try:
     email_input.send_keys("huydat13825@gmail.com") 
     time.sleep(1)
 
-    first_name_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.NAME, "first_name"))
+    address_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "address"))
     )
-    first_name_input.send_keys("Dat") 
+    address_input.send_keys("Phường 25, Bình Thạnh") 
     time.sleep(1)
 
-    last_name_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.NAME, "last_name"))
+    city_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "city"))
     )
-    last_name_input.send_keys("Huy") 
+    city_input.send_keys("Hồ Chí Minh") 
     time.sleep(1)
 
-    password1_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.NAME, "password1"))
+    state_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "state"))
     )
-    password1_input.send_keys("volehuydat1") 
+    state_input.send_keys("TP. Hồ Chí Minh") 
     time.sleep(1)
 
-    password2_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.NAME, "password2"))
+    phone_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "mobile"))
     )
-    password2_input.send_keys("volehuydat1") 
+    phone_input.send_keys("0987654321") 
     time.sleep(1)
-    # Nhấn nút "register"
-    register_button = driver.find_element(By.XPATH, "//button[@type='submit']")
-    register_button.click()
-    print("Đã nhấn nút 'Register'.")
-    time.sleep(2)
+    
+    country_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "country"))
+    )
+    country_input.send_keys("Việt Nam") 
+    time.sleep(1)
+    
+    # Nhấn nút "Payment"
+    payment_button = driver.find_element(By.NAME, "payment-button")
+    ActionChains(driver).move_to_element(payment_button).perform()
+
+    # Nhấn vào nút
+    payment_button.click()
+    print("Đã nhấn nút 'Payment'.")
+    time.sleep(5)
 except Exception as e:
     print("Đã xảy ra lỗi:", e)
 

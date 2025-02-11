@@ -7,6 +7,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 
+from django.core.mail import send_mail
+from django.views.decorators.csrf import csrf_exempt
+
 import hashlib
 import hmac
 import json
@@ -24,6 +27,19 @@ from app.models import PaymentForm
 from app.vnpay import vnpay
 
 # Create your views here.
+def advertise(request):
+    if request.user.is_authenticated:
+        customer = request.user
+        order, created = Order.objects.get_or_create(customer = customer, complete = False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+    else:
+        items =[]
+        order={'get_cart_items':0,'get_cart_total':0}
+        cartItems = order['get_cart_items']
+    categories = Category.objects.filter(is_sub =False)
+    context={'items':items,'order':order,'cartItems':cartItems,'categories':categories}
+    return render(request,'app/advertise.html', context)
 def detail(request):
     if request.user.is_authenticated:
         customer = request.user
@@ -54,8 +70,8 @@ def category(request):
         items =[]
         order={'get_cart_items':0,'get_cart_total':0}
         cartItems = order['get_cart_items']
-    products = Product.objects.all()
-    context = {'categories': categories, 'products': products, 'active_category': active_category, 'cartItems':cartItems,'categories': categories}
+    
+    context = {'categories': categories, 'products': products, 'active_category': active_category, 'cartItems':cartItems}
     return render(request,'app/category.html',context)
 def search(request):
     if request.method =="POST":
@@ -326,6 +342,11 @@ def payment_return(request):
                         OrderItem.objects.filter(order=order).delete()
                         order.delete()
                         messages.success(request, "Giỏ hàng đã được xóa.")
+                    # Gửi email
+                    subject = f'Thanh toán hóa đơn {order_id} thành công'
+                    body = f'Mã hóa đơn: {order_id}\nSố tiền: {amount}\nNội dung thanh toán: {order_desc}'
+                    send_mail(subject, body, 'your_email@gmail.com', ['datvowww@gmail.com'])  
+
                 
                 return render(request, "payment/payment_return.html", {
                     "title": "Kết quả thanh toán",
@@ -492,13 +513,35 @@ def payment_success(request):
             if request.user.is_authenticated:
                 order = Order.objects.filter(customer=request.user, complete=False).first()
                 if order:
-                    OrderItem.objects.filter(order=order).delete()  # Xóa tất cả các mục trong giỏ hàng
-                    order.delete()  # Xóa đơn hàng nếu cần
+                    OrderItem.objects.filter(order=order).delete()  
+                    order.delete()  
                     messages.success(request, "Giỏ hàng đã được xóa.")
-            return redirect('home')  # Chuyển hướng về trang chính
+            return redirect('home') 
         else:
             messages.error(request, "Thanh toán không thành công.")
-            return redirect('cart')  # Chuyển hướng về giỏ hàng hoặc trang khác
+            return redirect('cart')  
     else:
         messages.error(request, "Yêu cầu không hợp lệ.")
-        return redirect('cart')  # Chuyển hướng về giỏ hàng hoặc trang khác
+        return redirect('cart') 
+
+
+
+@csrf_exempt  
+def contact(request):
+    if request.method == 'POST':
+        
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        recipient_list = [request.POST.get('email')]
+
+       
+        try:
+            send_mail(subject, message, 'datvowww@gmail.com', recipient_list)
+            messages.success(request, 'Email đã được gửi thành công!')
+        except Exception as e:
+            messages.error(request, f'Có lỗi xảy ra: {e}')
+        
+        
+        return redirect('home')  
+
+    return render(request, 'app/contact.html')

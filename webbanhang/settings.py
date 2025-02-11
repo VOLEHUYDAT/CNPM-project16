@@ -140,3 +140,14 @@ VNPAY_PAYMENT_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # get 
 VNPAY_API_URL = 'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction'
 VNPAY_TMN_CODE = '69TVT7II'  # Website ID in VNPAY System, get from config
 VNPAY_HASH_SECRET_KEY = 'VGFIVDQOOLSZD3GX7N581V4XU1IXEU49'  # Secret key for create checksum,get from config
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'huydat13825@gmail.com'  # Thay bằng email của bạn
+EMAIL_HOST_PASSWORD = 'ehbr ymkr knoc otbt'
+
+TIME_ZONE = 'Asia/Ho_Chi_Minh'  
+USE_TZ = True
