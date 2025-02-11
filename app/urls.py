@@ -23,6 +23,7 @@ urlpatterns = [
     path('payment_return',views.payment_return, name='payment_return'),
     path('query', views.query, name='query'),
     path('refund', views.refund, name='refund'),
+    path('submit_review/<int:product_id>/', views.submit_review, name='submit_review'),
     #path('admin/', admin.site.urls),
 
 ]
