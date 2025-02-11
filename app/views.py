@@ -345,7 +345,8 @@ def payment_return(request):
                     # Gửi email
                     subject = f'Thanh toán hóa đơn {order_id} thành công'
                     body = f'Mã hóa đơn: {order_id}\nSố tiền: {amount}\nNội dung thanh toán: {order_desc}'
-                    send_mail(subject, body, 'your_email@gmail.com', ['datvowww@gmail.com'])  
+                    user_email = request.user.email
+                    send_mail(subject, body, 'your_email@gmail.com', [user_email])  
 
                 
                 return render(request, "payment/payment_return.html", {
