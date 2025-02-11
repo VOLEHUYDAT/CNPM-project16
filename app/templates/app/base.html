@@ -76,16 +76,16 @@
                     </ul>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#">Giới thiệu</a>
+                    <a class="nav-link" href="{% url 'advertise' %}">Giới thiệu</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#">Liên hệ</a>
+                    <a class="nav-link" href="{% url 'contact' %}">Liên hệ</a>  
                   </li>
                 </ul>
                 <form class="d-flex" role="search" method=POST action= "{% url 'search' %}">
                   {% csrf_token %}
                   <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name ="searched">
-                  <button class="btn btn-outline-success" type="submit">Search</button>
+                  <button class="btn btn-outline-success" id="search" type="submit">Search</button>
                 </form>
               </div>
                 <div style="padding: 0 8px" class="cart-icon">
@@ -125,6 +125,8 @@
           {% block category%}{%endblock category%}
           {% block detail%}{%endblock detail%}
           {% block payment%}{%endblock payment%}
+          {% block contact%}{%endblock contact%}
+          {% block advertise%}{%endblock advertise%}
           <!-- footer -->
           <footer class="container-fluid bg-success text-center fixed-bottom p-2 mt-5">
             Project16

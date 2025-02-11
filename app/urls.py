@@ -13,6 +13,8 @@ urlpatterns = [
     path('search/', views.search, name="search"),
     path('category/', views.category, name="category"),
     path('detail/', views.detail, name="detail"),
+    path('contact/', views.contact, name="contact"),
+    path('advertise/', views.advertise, name="advertise"),
     path('payment_success/', views.payment_success, name="payment_success"),
 
     path('pay',views.index, name='index'),

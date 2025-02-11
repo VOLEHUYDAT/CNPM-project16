@@ -1,0 +1,65 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block advertise %}
+    <div style ="padding-top:100px">
+        <header>
+            <h1>Chào mừng đến với Sữa Dành Cho Mẹ Bầu và Em Bé</h1>
+            <p>Chúng tôi cung cấp sản phẩm sữa chất lượng cao, an toàn và bổ dưỡng cho mẹ và bé!</p>
+        </header>
+    
+        <section class="features">
+            <h2>Tại sao chọn Sữa Dành Cho Mẹ Bầu và Em Bé?</h2>
+            <ul id="advertise">
+                <li><strong>Chất lượng hàng đầu:</strong> Sữa tươi nguyên chất, giàu dinh dưỡng, an toàn cho mẹ và bé.</li>
+                <li><strong>Được nghiên cứu kỹ lưỡng:</strong> Công thức dinh dưỡng đặc biệt, hỗ trợ sức khỏe cho mẹ bầu và sự phát triển của trẻ.</li>
+                <li><strong>Đa dạng sản phẩm:</strong> Sữa bầu, sữa công thức cho trẻ sơ sinh và trẻ nhỏ.</li>
+                <li><strong>Dịch vụ giao hàng tận nơi:</strong> Giao hàng nhanh chóng và tiện lợi, giúp mẹ bầu dễ dàng mua sắm.</li>
+                <li><strong>Khuyến mãi hấp dẫn:</strong> Các chương trình ưu đãi đặc biệt cho mẹ và bé.</li>
+            </ul>
+        </section>
+    </div>
+    <style>
+        header {
+            background-color: #4CAF50; 
+            color: white; 
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5em; 
+        }
+        
+        .features {
+            padding: 20px;
+            background-color: #ffffff; 
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: #4CAF50; 
+            font-size: 1.8em; 
+        }
+        
+        #advertise {
+            list-style-type: none; 
+            padding: 0;
+        }
+        
+        #advertise>li {
+            margin: 10px 0;
+            padding: 10px; 
+            border-left: 4px solid #4CAF50; 
+            background-color: #f1f1f1;
+            transition: background-color 0.3s; 
+        }
+        
+        li:hover {
+            background-color: #e0e0e0; 
+        }
+    </style>
+{% endblock advertise %}
