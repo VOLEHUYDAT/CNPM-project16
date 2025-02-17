@@ -22,7 +22,7 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "username"))
     )
-    username_input.send_keys("Huydat552") 
+    username_input.send_keys("Huydat640") 
     time.sleep(1)
 
     email_input = WebDriverWait(driver, 10).until(
@@ -64,7 +64,7 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "username"))
     )
-    username_input.send_keys("Huydat552") 
+    username_input.send_keys("Huydat640") 
     time.sleep(1)
     # Điền dữ liệu vào trường "password"
     password_input = driver.find_element(By.ID, "password")
@@ -77,7 +77,7 @@ try:
     time.sleep(2)
     #--------------------------------------------------
     # Danh sách các product ID cần thêm vào giỏ hàng
-    product_id = "5"
+    product_id = "8"
 
     add_to_cart_button = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, f"//button[@data-product='{product_id}']"))
@@ -90,7 +90,7 @@ try:
     print("Đã nhấn vào nút 'Add to cart' cho sản phẩm với ID:", product_id)
     time.sleep(1.5)
     #--------------------------------------------------
-    product_id = "2"
+    product_id = "8"
 
     add_to_cart_button = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, f"//button[@data-product='{product_id}']"))
@@ -206,6 +206,57 @@ try:
     submit_button = driver.find_element(By.XPATH, "//button[@type='submit']")
     submit_button.click()
     #--------------------------------------------------------------
+    cardNumber_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "card_number_mask"))
+    )
+    cardNumber_input.send_keys("9704198526191432198") 
+    time.sleep(1)
+    
+    cardHolder_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "cardHolder"))
+    )
+    cardHolder_input.send_keys("Nguyen Van A") 
+    time.sleep(1)
+
+    cardDate_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "cardDate"))
+    )
+    cardDate_input.send_keys("07/15") 
+    time.sleep(1)
+
+    btnContinue = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.ID, "btnContinue")) 
+    )
+    btnContinue.click()
+    time.sleep(2)
+
+    btnAgreeContinue = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.XPATH, "//span[text()='Đồng ý & Tiếp tục']"))  # Sử dụng XPath để tìm phần tử
+    )
+
+    # Nhấp vào nút "Đồng ý & Tiếp tục"
+    btnAgreeContinue.click()
+
+    # Tùy chọn: Chờ một giây để quan sát (không khuyến khích trong mã sản xuất)
+    time.sleep(2)
+
+    otpvalue_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "otpvalue"))
+    )
+    otpvalue_input.send_keys("123456") 
+    time.sleep(1)
+
+    btnConfirm = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.ID, "btnConfirm")) 
+    )
+    btnConfirm.click()
+    time.sleep(3)
+
+    backHome = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.ID, "backHome")) 
+    )
+    backHome.click()
+    time.sleep(2)
     time.sleep(40)
 except Exception as e:
     print("Đã xảy ra lỗi:", e)
