@@ -17,7 +17,7 @@ import urllib
 from urllib.parse import quote
 import urllib.request
 import random
-import requests
+import requests # type: ignore
 from datetime import datetime
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
