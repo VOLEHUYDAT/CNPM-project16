@@ -35,6 +35,19 @@ try:
     print("Đã nhấn nút 'Login'.")
     time.sleep(2)
     
+    product_id = "8"
+
+    add_to_cart_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, f"//button[@data-product='{product_id}']"))
+    )
+    # Cuộn đến nút
+    driver.execute_script("arguments[0].scrollIntoView();", add_to_cart_button)
+    
+    time.sleep(2)
+
+    add_to_cart_button.click()
+    print("Đã nhấn vào nút 'Add to cart' cho sản phẩm với ID:", product_id)
+    time.sleep(2)
 
 except Exception as e:
     print("Đã xảy ra lỗi:", e)
