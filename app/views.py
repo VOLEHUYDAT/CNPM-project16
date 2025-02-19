@@ -88,9 +88,9 @@ def search(request):
         items =[]
         order={'get_cart_items':0,'get_cart_total':0}
         cartItems = order['get_cart_items']
-      
+    categories = Category.objects.filter(is_sub =False)
     products = Product.objects.all()
-    return render(request,'app/search.html',{"searched":searched,"keys":keys,'products':products, 'cartItems':cartItems})
+    return render(request,'app/search.html',{"searched":searched,"keys":keys,'products':products, 'cartItems':cartItems, 'categories': categories})
 
 def register(request):
     form = CreateUserForm()  
@@ -130,7 +130,7 @@ def home(request):
         cartItems = order['get_cart_items']
     categories = Category.objects.filter(is_sub =False)
     products = Product.objects.all()
-    context={'products':products, 'cartItems':cartItems,'categories': categories,}
+    context={'products':products, 'cartItems':cartItems,'categories': categories}
     return render(request, 'app/home.html', context) 
 def cart(request):
     if request.user.is_authenticated:

@@ -72,7 +72,8 @@ try:
     send_button = driver.find_element(By.XPATH, "//button[@type='submit']")
     send_button.click()
     print("Đã nhấn nút 'Send'.")
-
+    time.sleep(2)
+    
     product_id = "5"
     view_button = WebDriverWait(driver, 10).until(
        EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, '?id={product_id}') and contains(text(), 'View')]"))

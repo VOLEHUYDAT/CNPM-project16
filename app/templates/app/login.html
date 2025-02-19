@@ -37,15 +37,19 @@
                                         <div data-mdb-input-init class="form-outline mb-4">
                                             <input type="password" name="password" id="password" class="form-control form-control-lg" />
                                             <label class="form-label" for="password" style="padding-right:53px">Password</label>
+                                        </div>
                                         {% for message in messages  %}
                                         <p id="message" style="color:red; font-size:16px">{{message}}</p>
                                         {% endfor %}
                                         <div class="d-flex justify-content-center">
+                                            <button  type="submit" data-mdb-button-init
                                                 data-mdb-ripple-init class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Login</button>
                                         </div>
                                         
                                         <p class="text-center text-muted mt-5 mb-0">Haven't already an account? <a href="{% url 'register'%}"
-     
+                                            class="fw-bold text-body"><u>Register here</u></a></p>
+                                            
+                                    </form>
                         </div>
                     </div>
                 </div>

@@ -22,7 +22,7 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "username"))
     )
-    username_input.send_keys("Huydat642") 
+    username_input.send_keys("Huydat646") 
     time.sleep(1)
 
     email_input = WebDriverWait(driver, 10).until(
@@ -64,7 +64,7 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "username"))
     )
-    username_input.send_keys("Huydat642") 
+    username_input.send_keys("Huydat646") 
     time.sleep(1)
     # Điền dữ liệu vào trường "password"
     password_input = driver.find_element(By.ID, "password")
@@ -77,7 +77,7 @@ try:
     time.sleep(2)
     #--------------------------------------------------
     # Danh sách các product ID cần thêm vào giỏ hàng
-    product_id = "4"
+    product_id = "8"
 
     add_to_cart_button = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, f"//button[@data-product='{product_id}']"))
@@ -90,7 +90,7 @@ try:
     print("Đã nhấn vào nút 'Add to cart' cho sản phẩm với ID:", product_id)
     time.sleep(1.5)
     #--------------------------------------------------
-    product_id = "4"
+    product_id = "8"
 
     add_to_cart_button = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, f"//button[@data-product='{product_id}']"))
