@@ -538,7 +538,11 @@ def contact(request):
 
        
         try:
+<<<<<<< HEAD
             send_mail(subject, message, 'tht1267@gmail.com', recipient_list)
+=======
+            send_mail(subject, message, 'huydat13825@gmail.com', recipient_list)
+>>>>>>> fbdd0c803fe16400a445b054aef75c1d1f1bc29f
             messages.success(request, 'Email đã được gửi thành công!')
         except Exception as e:
             messages.error(request, f'Có lỗi xảy ra: {e}')
