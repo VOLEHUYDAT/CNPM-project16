@@ -22,7 +22,7 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "username"))
     )
-    username_input.send_keys("Huydat640") 
+    username_input.send_keys("Huydat642") 
     time.sleep(1)
 
     email_input = WebDriverWait(driver, 10).until(
@@ -64,7 +64,7 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "username"))
     )
-    username_input.send_keys("Huydat640") 
+    username_input.send_keys("Huydat642") 
     time.sleep(1)
     # Điền dữ liệu vào trường "password"
     password_input = driver.find_element(By.ID, "password")
@@ -257,7 +257,7 @@ try:
     )
     backHome.click()
     time.sleep(2)
-    time.sleep(40)
+    time.sleep(5)
 except Exception as e:
     print("Đã xảy ra lỗi:", e)
 
