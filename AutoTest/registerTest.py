@@ -9,7 +9,7 @@ driver = webdriver.Chrome()
 
 try:
     # Mở trang web
-    driver.get("http://127.0.0.1:8000/")  # Thay đổi URL nếu cần
+    driver.get("http://127.0.0.1:8000/")
     time.sleep(2)
 
     register = WebDriverWait(driver, 10).until(
@@ -22,37 +22,37 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "username"))
     )
-    username_input.send_keys("Huydat3") 
+    username_input.send_keys("thuongg") 
     time.sleep(1)
 
     email_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "email"))
     )
-    email_input.send_keys("huydat13825@gmail.com") 
+    email_input.send_keys("tht1267@gmail.com") 
     time.sleep(1)
 
     first_name_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "first_name"))
     )
-    first_name_input.send_keys("Dat") 
+    first_name_input.send_keys("Thuong") 
     time.sleep(1)
 
     last_name_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "last_name"))
     )
-    last_name_input.send_keys("Huy") 
+    last_name_input.send_keys("Hoang") 
     time.sleep(1)
 
     password1_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "password1"))
     )
-    password1_input.send_keys("volehuydat1") 
+    password1_input.send_keys("thuongg12345") 
     time.sleep(1)
 
     password2_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "password2"))
     )
-    password2_input.send_keys("volehuydat1") 
+    password2_input.send_keys("thuongg12345") 
     time.sleep(1)
     # Nhấn nút "register"
     register_button = driver.find_element(By.XPATH, "//button[@type='submit']")

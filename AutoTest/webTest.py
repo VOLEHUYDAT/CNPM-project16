@@ -22,37 +22,41 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "username"))
     )
+<<<<<<< HEAD
     username_input.send_keys("Huydat642") 
+=======
+    username_input.send_keys("Thuong") 
+>>>>>>> 440fa49b16dc3fcbbeec72aa2907a35c599a7520
     time.sleep(1)
 
     email_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "email"))
     )
-    email_input.send_keys("huydat13825@gmail.com") 
+    email_input.send_keys("tht1267@gmail.com") 
     time.sleep(1)
 
     first_name_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "first_name"))
     )
-    first_name_input.send_keys("Dat") 
+    first_name_input.send_keys("Thuong") 
     time.sleep(1)
 
     last_name_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "last_name"))
     )
-    last_name_input.send_keys("Huy") 
+    last_name_input.send_keys("Hoang") 
     time.sleep(1)
 
     password1_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "password1"))
     )
-    password1_input.send_keys("volehuydat1") 
+    password1_input.send_keys("thuongdeptrai2005") 
     time.sleep(1)
 
     password2_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "password2"))
     )
-    password2_input.send_keys("volehuydat1") 
+    password2_input.send_keys("thuongtran2005") 
     time.sleep(1)
     # Nhấn nút "register"
     register_button = driver.find_element(By.XPATH, "//button[@type='submit']")
@@ -64,11 +68,15 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "username"))
     )
+<<<<<<< HEAD
     username_input.send_keys("Huydat642") 
+=======
+    username_input.send_keys("Thuong") 
+>>>>>>> 440fa49b16dc3fcbbeec72aa2907a35c599a7520
     time.sleep(1)
     # Điền dữ liệu vào trường "password"
     password_input = driver.find_element(By.ID, "password")
-    password_input.send_keys("volehuydat1")
+    password_input.send_keys("thuongtran2005")
     time.sleep(1)  
     # Nhấn nút "Login"
     login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
@@ -77,7 +85,7 @@ try:
     time.sleep(2)
     #--------------------------------------------------
     # Danh sách các product ID cần thêm vào giỏ hàng
-    product_id = "8"
+    product_id = "4"
 
     add_to_cart_button = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, f"//button[@data-product='{product_id}']"))
@@ -90,7 +98,7 @@ try:
     print("Đã nhấn vào nút 'Add to cart' cho sản phẩm với ID:", product_id)
     time.sleep(1.5)
     #--------------------------------------------------
-    product_id = "8"
+    product_id = "4"
 
     add_to_cart_button = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, f"//button[@data-product='{product_id}']"))
@@ -109,7 +117,7 @@ try:
     search = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "searched"))
     )
-    search.send_keys("Biomil") 
+    search.send_keys("Sữa bột Biomilplus 2") 
     time.sleep(1)
 
     search = WebDriverWait(driver, 10).until(
@@ -151,13 +159,13 @@ try:
     name_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "name"))
     )
-    name_input.send_keys("Huydat") 
+    name_input.send_keys("Thuong") 
     time.sleep(1)
 
     email_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "email"))
     )
-    email_input.send_keys("huydat13825@gmail.com") 
+    email_input.send_keys("tht1267@gmail.com") 
     time.sleep(1)
 
     address_input = WebDriverWait(driver, 10).until(
@@ -206,6 +214,7 @@ try:
     submit_button = driver.find_element(By.XPATH, "//button[@type='submit']")
     submit_button.click()
     #--------------------------------------------------------------
+<<<<<<< HEAD
     cardNumber_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "card_number_mask"))
     )
@@ -258,6 +267,9 @@ try:
     backHome.click()
     time.sleep(2)
     time.sleep(5)
+=======
+    time.sleep(40)
+>>>>>>> 440fa49b16dc3fcbbeec72aa2907a35c599a7520
 except Exception as e:
     print("Đã xảy ra lỗi:", e)
 

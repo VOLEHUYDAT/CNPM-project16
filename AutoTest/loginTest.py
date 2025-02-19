@@ -23,11 +23,11 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "username"))
     )
-    username_input.send_keys("Huydat552") 
+    username_input.send_keys("thuongg") 
     time.sleep(1)
     # Điền dữ liệu vào trường "password"
     password_input = driver.find_element(By.ID, "password")
-    password_input.send_keys("volehuydat1")
+    password_input.send_keys("Thuong2209@a")
     time.sleep(1)  
     # Nhấn nút "Login"
     login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
@@ -35,19 +35,6 @@ try:
     print("Đã nhấn nút 'Login'.")
     time.sleep(2)
     
-    product_id = "8"
-
-    add_to_cart_button = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, f"//button[@data-product='{product_id}']"))
-    )
-    # Cuộn đến nút
-    driver.execute_script("arguments[0].scrollIntoView();", add_to_cart_button)
-    
-    time.sleep(2)
-
-    add_to_cart_button.click()
-    print("Đã nhấn vào nút 'Add to cart' cho sản phẩm với ID:", product_id)
-    time.sleep(2)
 
 except Exception as e:
     print("Đã xảy ra lỗi:", e)

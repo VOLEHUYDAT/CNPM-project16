@@ -22,11 +22,11 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "username"))
     )
-    username_input.send_keys("admin") 
+    username_input.send_keys("bibo009") 
     time.sleep(1)
     # Điền dữ liệu vào trường "password"
     password_input = driver.find_element(By.ID, "password")
-    password_input.send_keys("admin")
+    password_input.send_keys("nguyengiahung123")
     time.sleep(1)  
     # Nhấn nút "Login"
     login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
@@ -34,7 +34,7 @@ try:
     print("Đã nhấn nút 'Login'.")
     time.sleep(2)
 
-    product_id = "12"
+    product_id = str(random.randint(1, 5))
     
     view_button = WebDriverWait(driver, 10).until(
        EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, '?id={product_id}') and contains(text(), 'View')]"))
@@ -105,5 +105,4 @@ except Exception as e:
     time.sleep(10)
 finally:
     # Đóng trình duyệt
-    time.sleep(3)
     driver.quit()
