@@ -80,7 +80,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'sitesale',
         'USER':'root',
-        'PASSWORD':'2005',
+        'PASSWORD':'13082005',
         'HOST':'localhost',
         'PORT':'3307'
     }
@@ -146,8 +146,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'tht1267@gmail.com'  # Thay bằng email của bạn
-EMAIL_HOST_PASSWORD = 'sxxo iczk wibw deam'
+EMAIL_HOST_USER = 'huydat13825@gmail.com'  # Thay bằng email của bạn
+EMAIL_HOST_PASSWORD = 'hzwf hcqj brsv ntrj'
 
 TIME_ZONE = 'Asia/Ho_Chi_Minh'  
 USE_TZ = True
