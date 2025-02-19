@@ -538,7 +538,7 @@ def contact(request):
 
        
         try:
-            send_mail(subject, message, 'datvowww@gmail.com', recipient_list)
+            send_mail(subject, message, 'tht1267@gmail.com', recipient_list)
             messages.success(request, 'Email đã được gửi thành công!')
         except Exception as e:
             messages.error(request, f'Có lỗi xảy ra: {e}')
