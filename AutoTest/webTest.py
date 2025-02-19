@@ -68,15 +68,11 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "username"))
     )
-<<<<<<< HEAD
     username_input.send_keys("Huydat642") 
-=======
-    username_input.send_keys("Thuong") 
->>>>>>> 440fa49b16dc3fcbbeec72aa2907a35c599a7520
     time.sleep(1)
     # Điền dữ liệu vào trường "password"
     password_input = driver.find_element(By.ID, "password")
-    password_input.send_keys("thuongtran2005")
+    password_input.send_keys("volehuydat1")
     time.sleep(1)  
     # Nhấn nút "Login"
     login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
@@ -117,7 +113,7 @@ try:
     search = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "searched"))
     )
-    search.send_keys("Sữa bột Biomilplus 2") 
+    search.send_keys("Biomil") 
     time.sleep(1)
 
     search = WebDriverWait(driver, 10).until(
@@ -159,13 +155,13 @@ try:
     name_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "name"))
     )
-    name_input.send_keys("Thuong") 
+    name_input.send_keys("Huy Đạt") 
     time.sleep(1)
 
     email_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "email"))
     )
-    email_input.send_keys("tht1267@gmail.com") 
+    email_input.send_keys("huydat13825@gmail.com") 
     time.sleep(1)
 
     address_input = WebDriverWait(driver, 10).until(
@@ -214,7 +210,6 @@ try:
     submit_button = driver.find_element(By.XPATH, "//button[@type='submit']")
     submit_button.click()
     #--------------------------------------------------------------
-<<<<<<< HEAD
     cardNumber_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "card_number_mask"))
     )
@@ -269,7 +264,6 @@ try:
     time.sleep(5)
 =======
     time.sleep(40)
->>>>>>> 440fa49b16dc3fcbbeec72aa2907a35c599a7520
 except Exception as e:
     print("Đã xảy ra lỗi:", e)
 
