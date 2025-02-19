@@ -33,15 +33,7 @@ class vnpay:
         inputData = sorted(self.responseData.items())
         hasData = ''
         seq = 0
-        for key, val in inputData:
-            if str(key).startswith('vnp_'):
-                if seq == 1:
-                    hasData = hasData + "&" + str(key) + '=' + urllib.parse.quote_plus(str(val))
-                else:
-                    seq = 1
-                    hasData = str(key) + '=' + urllib.parse.quote_plus(str(val))
-        hashValue = self.__hmacsha512(secret_key, hasData)
-
+        
         print(
             'Validate debug, HashData:' + hasData + "\n HashValue:" + hashValue + "\nInputHash:" + vnp_SecureHash)
 
