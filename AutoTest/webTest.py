@@ -22,41 +22,37 @@ try:
     username_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "username"))
     )
-<<<<<<< HEAD
     username_input.send_keys("Huydat642") 
-=======
-    username_input.send_keys("Thuong") 
->>>>>>> 440fa49b16dc3fcbbeec72aa2907a35c599a7520
     time.sleep(1)
 
     email_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "email"))
     )
-    email_input.send_keys("tht1267@gmail.com") 
+    email_input.send_keys("huydat13825@gmail.com") 
     time.sleep(1)
 
     first_name_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "first_name"))
     )
-    first_name_input.send_keys("Thuong") 
+    first_name_input.send_keys("Dat") 
     time.sleep(1)
 
     last_name_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "last_name"))
     )
-    last_name_input.send_keys("Hoang") 
+    last_name_input.send_keys("Huy") 
     time.sleep(1)
 
     password1_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "password1"))
     )
-    password1_input.send_keys("thuongdeptrai2005") 
+    password1_input.send_keys("volehuydat1") 
     time.sleep(1)
 
     password2_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "password2"))
     )
-    password2_input.send_keys("thuongtran2005") 
+    password2_input.send_keys("volehuydat1") 
     time.sleep(1)
     # Nhấn nút "register"
     register_button = driver.find_element(By.XPATH, "//button[@type='submit']")
@@ -262,8 +258,6 @@ try:
     backHome.click()
     time.sleep(2)
     time.sleep(5)
-=======
-    time.sleep(40)
 except Exception as e:
     print("Đã xảy ra lỗi:", e)
 
