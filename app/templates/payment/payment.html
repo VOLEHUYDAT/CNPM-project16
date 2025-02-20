@@ -16,10 +16,26 @@
                 <input class="form-control" id="order_id"
                        name="order_id" type="text" value="{% now 'YmdHis' %}"/>
             </div>
+            <!--mã voucher-->
+            <!-- Hiển thị số tiền giảm nếu có -->
+            {% if discount_amount > 0 %}
             <div class="form-group">
+                <label for="discount">Giảm giá từ voucher</label>
+                <input class="form-control" id="discount"
+                       name="discount" type="number" value="-{{ discount_amount }}" disabled/>
+            </div>
+            {% endif %}
+
+
+            <!--<div class="form-group">
                 <label for="amount">Số tiền</label>
                 <input class="form-control" id="amount"
                        name="amount" type="number" value="{{ order.get_cart_total }}"/>
+            </div>-->
+            <div class="form-group">
+                <label for="amount">Số tiền</label>
+                <input class="form-control" id="amount"
+                       name="amount" type="number" value="{{ total_after_discount }}" readonly/>
             </div>
             <div class="form-group">
                 <label for="order_desc">Nội dung thanh toán</label>

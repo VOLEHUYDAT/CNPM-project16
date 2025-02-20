@@ -9,7 +9,7 @@ from django.contrib import messages
 
 from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
-
+from django.utils.timezone import now
 import hashlib
 import hmac
 import json
@@ -152,6 +152,13 @@ def checkout(request):
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
         
+        #ma voucher
+        # 🛠 Lấy số tiền giảm giá từ đơn hàng
+        discount_amount = order.discount_amount if order.voucher else 0
+        
+        # 🛠 Tính tổng tiền sau giảm giá
+        total_after_discount = order.get_cart_total - discount_amount
+
         if request.method == 'POST':
             name = request.POST.get('name')
             email = request.POST.get('email')
@@ -160,9 +167,11 @@ def checkout(request):
             state = request.POST.get('state')
             mobile = request.POST.get('mobile')
             country = request.POST.get('country')
+            
             if not name or not email or not address or not city or not state or not mobile or not country:
                 messages.error(request,"Please fill in all required fields.")
                 return redirect('checkout')
+            
             shipping_address = ShippingAddress(
                 customer = customer,
                 address = address,
@@ -178,8 +187,14 @@ def checkout(request):
         items =[]
         order={'get_cart_items':0,'get_cart_total':0}
         cartItems = order['get_cart_items']
+        #them ma voucher
+        discount_amount = 0
+        total_after_discount = 0
+        
     categories = Category.objects.filter(is_sub =False)  
-    context={'items':items,'order':order,'cartItems':cartItems, 'categories':categories}
+    
+    context={'items':items,'order':order,'cartItems':cartItems, 'categories':categories,'discount_amount':discount_amount, 'total_after_discount':total_after_discount}
+    
     return render(request, 'app/checkout.html', context)
 def updateItem(request):
     data = json.loads(request.body)
@@ -223,6 +238,9 @@ def payment(request):
         items =[]
         order={'get_cart_items':0,'get_cart_total':0}
         cartItems = order['get_cart_items'] 
+
+    discount_amount = order.discount_amount if hasattr(order, 'discount_amount') else 0
+    total_after_discount = max(order.get_cart_total - discount_amount, 0)  # Không để số âm
     
 
     if request.method == 'POST':
@@ -264,7 +282,7 @@ def payment(request):
         else:
             print("Form input not validate")
     else:
-        context={'items':items,'order':order,'cartItems':cartItems, 'title': "Thanh toán"}
+        context={'items':items,'order':order,'cartItems':cartItems,'discount_amount':discount_amount,'total_after_discount':total_after_discount,'title': "Thanh toán"}
         return render(request, "payment/payment.html",context )
 
 
@@ -570,3 +588,36 @@ def submit_review(request, product_id):
                 data.save()
                 messages.success(request, 'Thank you! Your review has been submitted.')
                 return redirect(url)
+
+#them ma voucher
+def apply_voucher(request):
+    if request.method == 'POST':
+        voucher_code = request.POST.get('voucher_code')
+        voucher = Voucher.objects.filter(code=voucher_code, status=True).first()
+
+        if not voucher:
+            messages.error(request, "Invalid or expired voucher.")
+            return redirect('cart')
+
+        order = Order.objects.get(customer=request.user, complete=False)
+
+        # Kiểm tra nếu đơn hàng đủ điều kiện để sử dụng voucher
+        if order.get_cart_total < voucher.min_purchase_amount:
+            messages.error(request, "Order total is too low to use this voucher.")
+            return redirect('cart')
+
+        if voucher.expiration_date < now():
+            messages.error(request, "This voucher has expired.")
+            return redirect('cart')
+
+        # Tính toán số tiền giảm giá từ voucher
+        discount_amount = (voucher.discount_percentage / 100) * order.get_cart_total
+
+        # Lưu voucher vào đơn hàng và cập nhật số tiền giảm giá
+        order.voucher = voucher
+        order.discount_amount = int(discount_amount)  # 🛠 Chuyển về số nguyên
+        order.save()
+
+        messages.success(request, f"Voucher applied! You saved {order.discount_amount} VNĐ.")
+
+    return redirect('cart')
