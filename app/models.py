@@ -35,12 +35,28 @@ class Product(models.Model):
             url=''
         return url
 
+#them ma voucher
+class Voucher(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_percentage = models.FloatField(default=0)  # Giảm theo phần trăm
+    discount_amount = models.IntegerField(default=0)  # Giảm giá cố định theo số tiền
+    min_purchase_amount = models.IntegerField(default=0)  # Số tiền tối thiểu để áp dụng voucher
+    expiration_date = models.DateTimeField()
+    status = models.BooleanField(default=True)  # Trạng thái voucher (còn hoạt động không)
+
+    def __str__(self):
+        return f"{self.code} - {self.discount_amount} VNĐ"
+
 class Order(models.Model):
     customer = models.ForeignKey(User,on_delete=models.SET_NULL,blank=True,null=True)
     date_order = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=200,null=True,blank=False)
     complete = models.BooleanField(default=False,null=True,blank=False)
     transaction_id = models.CharField(max_length=200,null=True)
+
+    #mã voucher
+    voucher = models.ForeignKey(Voucher, on_delete=models.SET_NULL, blank=True, null=True)
+    discount_amount = models.FloatField(default=0)  # 🛠 Lưu số tiền giảm giá
 
     def __str__(self):
         return str(self.id)
@@ -105,3 +121,6 @@ class ReviewRating(models.Model):
 
     def __str__(self):
         return self.subject
+
+
+

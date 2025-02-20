@@ -16,6 +16,7 @@ urlpatterns = [
     path('contact/', views.contact, name="contact"),
     path('advertise/', views.advertise, name="advertise"),
     path('payment_success/', views.payment_success, name="payment_success"),
+    path('apply_voucher/', views.apply_voucher, name='apply_voucher'),
 
     path('pay',views.index, name='index'),
     path('payment',views.payment, name='payment'),

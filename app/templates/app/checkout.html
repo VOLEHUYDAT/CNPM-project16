@@ -76,6 +76,16 @@
                 {% endfor %}
                 <h5>Items: {{ order.get_cart_items }}</h5>
                 <h5 style='padding-bottom:50px'>Total: {{ order.get_cart_total|intcomma }} VNĐ</h5>
+
+                <!--them phan ma voucher-->
+                <!-- Hiển thị số tiền giảm giá nếu có voucher -->
+                {% if order.voucher %}
+                <p>Voucher Applied: <strong>{{ order.voucher.code }}</strong></p>
+                <p>Discount: <strong>-{{ discount_amount|intcomma }} VNĐ</strong></p>
+                {% endif %}
+
+                <!-- Hiển thị tổng tiền sau giảm giá -->
+                <h5 style="padding-bottom: 50px;">Total after Discount: <strong>{{ total_after_discount|intcomma }} VNĐ</strong></h5>
             </div>
         </div>
     </div>

@@ -48,6 +48,26 @@
 			</div>
 			{% endfor %}
 		</div>
+		<!--mã voucher-->
+		<div class="cart-summary">
+			<h3>Total: {{ order.get_cart_total|intcomma }} VNĐ</h3>
+		
+			<!-- Form nhập mã voucher -->
+			<form method="POST" action="{% url 'apply_voucher' %}">
+				{% csrf_token %}
+				<input type="text" name="voucher_code" placeholder="Enter voucher code" required>
+				<button type="submit">Apply Voucher</button>
+			</form>
+		
+			<!-- Hiển thị thông báo khi voucher được áp dụng -->
+			{% if messages %}
+				{% for message in messages %}
+					<div class="alert alert-{{ message.tags }}">
+						{{ message }}
+					</div>
+				{% endfor %}
+			{% endif %}
+		</div>
 	</div>
 </div>
 {% endblock cart_content %}
