@@ -20,10 +20,31 @@
     <div class="col-lg-3">
       <img class="thumbnail" src="{{product.ImageURL}}">
       <h6><strong>{{product.name}}</strong></h6>
+      <p style="color: {% if product.stock > 0 %}green{% else %}red{% endif %}">
+      {% if product.stock > 0 %}
+          Còn lại: {{ product.stock }}
+      {% else %}
+          TẠM HẾT HÀNG
+      {% endif %}
+</p>
+
       <hr>
-      <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to cart</button>
+      {% if product.stock > 0 %}
+          <button
+              id="add-to-cart"
+              data-product="{{product.id}}"
+              data-action="add"
+              class="btn btn-outline-secondary add-btn update-cart">
+              Thêm vào giỏ
+          </button>
+      {% else %}
+          <button class="btn btn-danger" disabled>Tạm hết hàng</button>
+      {% endif %}
       <a class="btn btn-outline-success" href="{% url 'detail' %}?id={{product.id}}">View</a>
-      <h3 style="display: inline-block; float: right"><strong>{{product.price|intcomma}} VNĐ</strong></h3>
+      <div class="product-price" style="text-align:center; white-space: nowrap; font-size: 22px; font-weight: bold;">
+        {{ product.price|intcomma }} VNĐ
+      </div>3>
+
   
     </div>
     {% endfor %}

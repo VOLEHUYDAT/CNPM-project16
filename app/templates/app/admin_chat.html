@@ -1,4 +1,6 @@
 {% extends 'app/base.html' %}
+{% load static %}
+{% load humanize %}
 {% block admin_chat %}
 <div style='padding-top:100px; width: 100%; padding-bottom: 50px;'  style="padding-top:100px; max-width:800px; margin:auto;">
     <h3>💬 Chat Admin</h3>
@@ -7,7 +9,10 @@
         <label>Chọn khách hàng:</label>
         <select id="user-select">
             {% for user in users %}
-                <option value="{{ user.id }}">{{ user.username }}</option>
+                <option value="{{ user.id }}" {% if user.username == "datvlh" %}selected{% endif %}>
+                    {{ user.username }}
+                </option>
+
             {% endfor %}
         </select>
     </div>

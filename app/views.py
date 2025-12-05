@@ -224,12 +224,24 @@ def updateItem(request):
     action = data['action']
     customer = request.user
     product = Product.objects.get(id = productId)
-    order, created = Order.objects.get_or_create(customer = customer, complete = False)
-    orderItem, created = OrderItem.objects.get_or_create(order = order, product = product)
-    if action =='add':
-        orderItem.quantity +=1
-    elif action =='remove':
-        orderItem.quantity -=1
+    # --- CHECK HẾT HÀNG ---
+    if action == 'add' and product.stock <= 0:
+        return JsonResponse({'error': 'Hết hàng'}, status=400)
+    # -----------------------
+
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+
+    # tăng / giảm số lượng
+    if action == 'add':
+        orderItem.quantity += 1
+        product.stock -= 1     # trừ kho
+        product.save()
+    elif action == 'remove':
+        orderItem.quantity -= 1
+        product.stock += 1     # trả lại kho
+        product.save()
+
     orderItem.save()
     if orderItem.quantity <=0:
         orderItem.delete()
@@ -696,10 +708,25 @@ def sales_dashboard(request):
     # Chuyển QuerySet sang list và sau đó sang JSON string
     sales_data_list = list(sales_data_query)
     sales_data_json = json.dumps(sales_data_list, cls=DjangoJSONEncoder)
+    if request.user.is_authenticated:
+        customer = request.user
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+    else:
+        items = []
+        order = {'get_cart_items': 0, 'get_cart_total': 0}
+        cartItems = 0
+
+    categories = Category.objects.filter(is_sub=False)
     
     context = {
         'sales_data_json': sales_data_json, # Dữ liệu JSON để JS sử dụng
-        'title': 'Báo Cáo Thống Kê Bán Hàng'
+        'title': 'Báo Cáo Thống Kê Bán Hàng',
+        'items': items,
+        'cartItems': cartItems,
+        'categories': categories,
+        'order': order
     }
     return render(request, 'app/sales_dashboard.html', context)
 
@@ -710,7 +737,25 @@ from .models import ChatMessage, User
 @login_required
 def chat_page(request):
     admin_user = User.objects.get(username="admin")
-    return render(request, "app/chat.html", {"admin": admin_user})
+    if request.user.is_authenticated:
+        customer = request.user
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+    else:
+        items = []
+        order = {'get_cart_items': 0, 'get_cart_total': 0}
+        cartItems = 0
+
+    categories = Category.objects.filter(is_sub=False)
+    context={
+            'items':items,
+             'order':order,
+             'cartItems':cartItems,
+             'categories':categories,
+             "admin": admin_user
+            }
+    return render(request, "app/chat.html", context)
 
 @login_required
 def send_message(request):
@@ -760,8 +805,31 @@ def load_messages(request):
 def admin_chat_page(request):
     if not request.user.is_staff:
         return redirect("home")
+
     users = User.objects.exclude(username="admin")
-    return render(request, "app/admin_chat.html", {"users": users})
+
+    # xử lý giỏ hàng
+    if request.user.is_authenticated:
+        customer = request.user
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+    else:
+        items = []
+        order = {'get_cart_items': 0, 'get_cart_total': 0}
+        cartItems = 0
+
+    categories = Category.objects.filter(is_sub=False)
+
+    context = {
+        'users': users,
+        'items': items,
+        'order': order,
+        'cartItems': cartItems,
+        'categories': categories,
+    }
+
+    return render(request, "app/admin_chat.html", context)
 
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -783,7 +851,27 @@ def admin_manage_orders(request):
 @login_required
 def my_orders(request):
     orders = Order.objects.filter(customer=request.user)
-    return render(request, "app/user_orders.html", {"orders": orders})
+    if request.user.is_authenticated:
+        customer = request.user
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+    else:
+        items = []
+        order = {'get_cart_items': 0, 'get_cart_total': 0}
+        cartItems = 0
+
+    categories = Category.objects.filter(is_sub=False)
+
+    context = {
+        'orders': orders,
+        'items': items,
+        'order': order,
+        'cartItems': cartItems,
+        'categories': categories,
+    }
+
+    return render(request, "app/user_orders.html", context)
 
 @login_required
 def confirm_received(request, order_id):
@@ -792,7 +880,6 @@ def confirm_received(request, order_id):
     if order.status == 'delivered':
         order.status = 'completed'
         order.save()
-
     return redirect('my_orders')
 
 @staff_member_required

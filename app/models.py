@@ -25,6 +25,7 @@ class Product(models.Model):
     price = models.BigIntegerField()
     media = models.ImageField(null=True,blank=True)
     detail = models.TextField(null=True,blank=True)
+    stock = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name 
@@ -35,6 +36,9 @@ class Product(models.Model):
         except:
             url=''
         return url
+    @property
+    def is_out_of_stock(self):
+        return self.stock <= 0 
 
 #them ma voucher
 class Voucher(models.Model):
