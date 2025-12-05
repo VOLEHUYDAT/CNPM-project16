@@ -1,0 +1,39 @@
+{% extends 'app/base.html' %}
+{% block user_order %}
+<div class="container mt-4">
+    <h2>Đơn hàng của bạn</h2>
+
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.get_cart_total }} đ</td>
+                    <td>{{ order.get_status_display }}</td>
+                    <td>
+                        {% if order.status == 'delivered' %}
+                            <a href="{% url 'confirm_received' order.id %}" class="btn btn-success btn-sm">
+                                Tôi đã nhận hàng
+                            </a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">Bạn chưa có đơn hàng nào.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

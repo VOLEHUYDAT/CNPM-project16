@@ -31,13 +31,15 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # 'app',
+    'app.apps.AppConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app',
+    
     'django.contrib.humanize',
 ]
 
@@ -47,6 +49,17 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 1. Session Middleware phải nằm ở đầu danh sách này
+    'django.contrib.sessions.middleware.SessionMiddleware', 
+    
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    
+    # 2. Authentication Middleware phải nằm sau Session Middleware
+    'django.contrib.auth.middleware.AuthenticationMiddleware', 
+    
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -135,19 +148,25 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'app/static/media')
 
 
-VNPAY_RETURN_URL = 'http://localhost:8000/payment_return'  # get from config
-VNPAY_PAYMENT_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # get from config
+# VNPay
+VNPAY_RETURN_URL = 'http://127.0.0.1:8000/payment_return'
+VNPAY_PAYMENT_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'
 VNPAY_API_URL = 'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction'
-VNPAY_TMN_CODE = '69TVT7II'  # Website ID in VNPAY System, get from config
-VNPAY_HASH_SECRET_KEY = 'VGFIVDQOOLSZD3GX7N581V4XU1IXEU49'  # Secret key for create checksum,get from config
+VNPAY_TMN_CODE = 'VLG31606'
+VNPAY_HASH_SECRET_KEY = 'D1WLQHN9EQKR81UAWOEQV8297UC310AA'
 
-
+# Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'huydat13825@gmail.com'  # Thay bằng email của bạn
+EMAIL_HOST_USER = 'huydat13825@gmail.com'
 EMAIL_HOST_PASSWORD = 'hzwf hcqj brsv ntrj'
 
-TIME_ZONE = 'Asia/Ho_Chi_Minh'  
-USE_TZ = True
+# Cookie để tránh mất session khi VNPay redirect về
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+

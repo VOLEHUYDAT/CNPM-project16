@@ -1,0 +1,77 @@
+{% extends 'app/base.html' %}
+{% block manage_status %}
+<div class="container" style="padding-top: 100px; padding-bottom: 50px;">
+    <h2>Quản lý tất cả đơn hàng</h2>
+
+    <table class="table table-bordered mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Khách hàng</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <!-- BẮT ĐẦU FORM CỦA TỪNG ĐƠN -->
+                <form method="POST" action="{% url 'admin_update_status_single' order.id %}">
+                    {% csrf_token %}
+
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.customer.username }}</td>
+                    <td>{{ order.get_cart_total }} đ</td>
+
+                    <td>
+
+                        <!-- Dropdown màu -->
+                        <select name="status"
+                                class="form-control mt-2"
+                                style="
+                                    width: 160px;
+                                    {% if order.status == 'processing' %}
+                                        background-color: #e74c3c; color: white;
+                                    {% elif order.status == 'shipping' %}
+                                        background-color: #f1c40f; color: black;
+                                    {% elif order.status == 'delivered' %}
+                                        background-color: #66FFFF; color: black;    
+                                    {% elif order.status == 'completed' %}
+                                        background-color: #27ae60; color: black;
+                                    {% endif %}
+                                ">
+                            
+                            <option value="processing" style="background:#e74c3c; color:white;"
+                                {% if order.status == 'processing' %}selected{% endif %}>Đang xử lý</option>
+
+                            <option value="shipping" style="background:#f1c40f; color:black;"
+                                {% if order.status == 'shipping' %}selected{% endif %}>Đang giao</option>
+
+                            <option value="delivered" style="background:#66FFFF; color:black;"
+                                {% if order.status == 'delivered' %}selected{% endif %}>Đã giao</option>
+
+                            <option value="completed" style="background:#27ae60; color:black;"
+                                {% if order.status == 'completed' %}selected{% endif %}>Hoàn thành</option>
+
+                        </select>
+                    </td>
+
+                    <td>{{ order.date_order }}</td>
+
+                    <!-- Nút LƯU RIÊNG TỪNG ĐƠN -->
+                    <td>
+                        <button class="btn btn-primary btn-sm" style="text-align: center; margin: 0 auto; border-radius: 10px;">Lưu</button>
+                    </td>
+                </form>
+                <!-- KẾT THÚC FORM -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <h3 class="mb-4">Chi tiết Đơn hàng #{{ order.id }}</h3>
+        <hr>
+
+        <div class="col-lg-6">
+            <h4>Thông tin Đơn hàng</h4>
+            <ul class="list-group mb-4">
+                <li class="list-group-item"><strong>Mã đơn hàng:</strong> #{{ order.id }}</li>
+                <li class="list-group-item"><strong>Ngày đặt hàng:</strong> {{ order.date_ordered|date:"d/m/Y H:i" }}</li>
+                <li class="list-group-item"><strong>Trạng thái:</strong> 
+                    {% if order.complete %}
+                        <span class="badge bg-success">Đã hoàn tất thanh toán</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">Đang chờ xử lý</span>
+                    {% endif %}
+                </li>
+                {% if order.transaction_id %}
+                    <li class="list-group-item"><strong>Mã giao dịch (VNPay):</strong> {{ order.transaction_id }}</li>
+                {% endif %}
+            </ul>
+            
+            {% if order.shippingaddress_set.first %}
+            <h4>Địa chỉ Giao hàng</h4>
+            {% with shipping=order.shippingaddress_set.first %}
+            <ul class="list-group mb-4">
+                <li class="list-group-item"><strong>Người nhận:</strong> {{ shipping.name }}</li>
+                <li class="list-group-item"><strong>Số điện thoại:</strong> {{ shipping.phone_number }}</li>
+                <li class="list-group-item"><strong>Địa chỉ:</strong> {{ shipping.address }}</li>
+                <li class="list-group-item"><strong>Ghi chú:</strong> {{ shipping.note|default:"Không có" }}</li>
+            </ul>
+            {% endwith %}
+            {% endif %}
+
+        </div>
+
+        <div class="col-lg-6">
+            <h4>Tóm tắt Thanh toán</h4>
+            <ul class="list-group mb-4">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Tổng tiền sản phẩm:</span> <strong>{{ order.get_cart_total|intcomma }} VNĐ</strong>
+                </li>
+                {% if order.discount_amount %}
+                <li class="list-group-item d-flex justify-content-between text-danger">
+                    <span>Mã giảm giá ({{ order.voucher.code|default:"-" }}):</span> <strong>- {{ order.discount_amount|intcomma }} VNĐ</strong>
+                </li>
+                {% endif %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Phí vận chuyển:</span> <strong>0 VNĐ</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between bg-light">
+                    <h4>Tổng thanh toán:</h4> 
+                    <h4><strong>{{ order.get_total_after_discount|intcomma }} VNĐ</strong></h4>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <h4>Các Sản phẩm đã mua</h4>
+        <hr>
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Sản phẩm</th>
+                    <th scope="col">Số lượng</th>
+                    <th scope="col">Đơn giá</th>
+                    <th scope="col">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        <a href="{% url 'detail' item.product.id %}">{{ item.product.name }}</a>
+                    </td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.product.price|intcomma }} VNĐ</td>
+                    <td>{{ item.get_total|intcomma }} VNĐ</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="row mt-3">
+        <a href="{% url 'order_history' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Quay lại Lịch sử Đơn hàng</a>
+    </div>
+
+</div>
+{% endblock content %}

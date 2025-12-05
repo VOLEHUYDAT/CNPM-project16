@@ -83,6 +83,29 @@
                   <li class="nav-item">
                     <a id="contact" class="nav-link" href="{% url 'contact' %}">Liên hệ</a>  
                   </li>
+                  {% if request.user.is_staff %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'admin_chat' %}">Chat với khách hàng</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'sales_dashboard' %}">Tổng hợp</a>
+                      </li>
+                      {% if request.user.is_staff %}
+                        <a class="nav-link" href="{% url 'admin_manage_orders' %}">Đơn hàng</a>
+                      {% endif %}
+
+                  {% else %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'chat' %}">Chat hỗ trợ</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'my_orders' %}">Đơn hàng của tôi</a>
+                      </li>
+                      
+                      
+
+                  {% endif %}
+
                 </ul>
                 <form class="d-flex" role="search" method=POST action= "{% url 'search' %}">
                   {% csrf_token %}
@@ -129,9 +152,16 @@
           {% block payment%}{%endblock payment%}
           {% block contact%}{%endblock contact%}
           {% block advertise%}{%endblock advertise%}
+          {% block order_history%}{%endblock order_history%}
+          {% block order_detail%}{%endblock order_detail%}
+          {% block chat %}{% endblock chat %}
+          {% block admin_chat %}{% endblock admin_chat %}
+          {% block user_order %}{% endblock user_order %}
+          {% block sales_dashboard %}{% endblock sales_dashboard %}
+          {% block manage_status %}{% endblock manage_status %}
           <!-- footer -->
           <footer class="container-fluid bg-success text-center fixed-bottom p-2 mt-5">
-            Project16
+            MILK BABY STORE © 2024. All rights reserved.
        </footer>
        <script src="{% static 'app/js/cart.js'%}"></script>
     </body>

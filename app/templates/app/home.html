@@ -1,6 +1,8 @@
 {% extends 'app/base.html' %}
 {% load static %}
 {% load humanize %}
+{% load url_helpers %}
+
 {% block banner_slider %}
 <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel" data-bs-interval="1000">
     <div class="carousel-indicators">
@@ -34,6 +36,17 @@
 </div>
 {% endblock banner_slider %}
 {% block main-content %}
+<div class="d-flex justify-content-end align-items-center mt-3" style="gap:10px;">
+  <label class="mb-0">Sắp xếp:</label>
+  <div class="btn-group">
+    <a class="btn btn-outline-secondary {% if current_sort == 'price_asc' %}active{% endif %}"
+       href="{% url_replace sort='price_asc' %}">Giá ↑</a>
+    <a class="btn btn-outline-secondary {% if current_sort == 'price_desc' %}active{% endif %}"
+       href="{% url_replace sort='price_desc' %}">Giá ↓</a>
+    <a class="btn btn-outline-secondary {% if not current_sort %}active{% endif %}"
+       href="{% url_replace sort=None %}">Mặc định</a>
+  </div>
+</div>
 <div class="row" style="width:100%;">
   {% for product in products %}
   <div class="col-lg-3">

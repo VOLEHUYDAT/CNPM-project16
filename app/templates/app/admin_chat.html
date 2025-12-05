@@ -1,0 +1,69 @@
+{% extends 'app/base.html' %}
+{% block admin_chat %}
+<div style='padding-top:100px; width: 100%; padding-bottom: 50px;'  style="padding-top:100px; max-width:800px; margin:auto;">
+    <h3>💬 Chat Admin</h3>
+
+    <div>
+        <label>Chọn khách hàng:</label>
+        <select id="user-select">
+            {% for user in users %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="chat-box" style="height:350px; border:1px solid #ccc; padding:10px; overflow-y:scroll; background:white; margin-top:10px;"></div>
+
+    <form id="chat-form" method="POST">
+        {% csrf_token %}
+        <textarea id="message" class="form-control" placeholder="Nhập tin nhắn..." required></textarea>
+        <button type="submit" class="btn btn-success mt-2">Gửi</button>
+    </form>
+</div>
+
+<script>
+let current_user_id = $("#user-select").val();
+
+function loadMessages(user_id) {
+    $.get("{% url 'load_messages' %}?user_id=" + user_id, function(data) {
+        let box = $("#chat-box");
+        box.html("");
+        data.forEach(msg => {
+            let align = msg.sender === "admin" ? "right" : "left";
+            box.append(`
+                <p style="text-align:${align}">
+                    <strong>${msg.sender}:</strong> ${msg.message} <br>
+                    <small>${msg.time}</small>
+                </p>
+            `);
+        });
+        box.scrollTop(box[0].scrollHeight);
+    });
+}
+
+// Tự động load tin nhắn mỗi 1.5s
+setInterval(() => {
+    loadMessages(current_user_id);
+}, 1500);
+
+// Khi admin chọn user khác
+$("#user-select").change(function() {
+    current_user_id = $(this).val();
+    loadMessages(current_user_id);
+});
+
+// Gửi tin nhắn
+$("#chat-form").submit(function(e) {
+    e.preventDefault();
+    $.post("{% url 'send_message' %}", {
+        message: $("#message").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+    }, function() {
+        $("#message").val("");
+        loadMessages(current_user_id);
+    });
+});
+
+loadMessages(current_user_id);
+</script>
+{% endblock %}

@@ -22,6 +22,8 @@ from datetime import datetime
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model, login
 
 from app.models import PaymentForm
 from app.vnpay import vnpay
@@ -120,18 +122,24 @@ def logoutPage(request):
 def home(request):
     if request.user.is_authenticated:
         customer = request.user
-        order, created = Order.objects.get_or_create(customer = customer, complete = False)
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
-       
     else:
-        items =[]
-        order={'get_cart_items':0,'get_cart_total':0}
-        cartItems = order['get_cart_items']
-    categories = Category.objects.filter(is_sub =False)
+        order = None
+        items = []
+        cartItems = 0
+
+    categories = Category.objects.filter(is_sub=False)
     products = Product.objects.all()
-    context={'products':products, 'cartItems':cartItems,'categories': categories}
-    return render(request, 'app/home.html', context) 
+
+    context = {
+        'products': products,
+        'cartItems': cartItems,
+        'categories': categories,
+        'order': order
+    }
+    return render(request, 'app/home.html', context)
 def cart(request):
     if request.user.is_authenticated:
         customer = request.user
@@ -145,18 +153,19 @@ def cart(request):
     categories = Category.objects.filter(is_sub =False)
     context={'items':items,'order':order,'cartItems':cartItems,'categories':categories}
     return render(request, 'app/cart.html', context)
+# File: CNPM-project16/app/views.py - HÀM checkout(request) ĐÃ SỬA
+
 def checkout(request):
     if request.user.is_authenticated:
         customer = request.user
-        order, created = Order.objects.get_or_create(customer = customer, complete = False)
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
-        
-        #ma voucher
-        # 🛠 Lấy số tiền giảm giá từ đơn hàng
+
+        # Lấy address duy nhất theo Order
+        existing_shipping = ShippingAddress.objects.filter(order=order).first()
+
         discount_amount = order.discount_amount if order.voucher else 0
-        
-        # 🛠 Tính tổng tiền sau giảm giá
         total_after_discount = order.get_cart_total - discount_amount
 
         if request.method == 'POST':
@@ -167,35 +176,48 @@ def checkout(request):
             state = request.POST.get('state')
             mobile = request.POST.get('mobile')
             country = request.POST.get('country')
-            
+
             if not name or not email or not address or not city or not state or not mobile or not country:
-                messages.error(request,"Please fill in all required fields.")
+                messages.error(request, "Please fill in all required fields.")
                 return redirect('checkout')
-            
-            shipping_address = ShippingAddress(
-                customer = customer,
-                address = address,
-                city = city,
-                state = state,
-                mobile = mobile,
-                order = order,
+
+            # Luôn chỉ có 1 địa chỉ cho 1 Order
+            ShippingAddress.objects.update_or_create(
+                order=order,
+                defaults={
+                    'customer': customer,
+                    'address': address,
+                    'city': city,
+                    'state': state,
+                    'mobile': mobile,
+                }
             )
-            shipping_address.save()
-            messages.success(request,"Shipping address saved successfully!")
+
+            messages.success(request, "Shipping address saved successfully!")
             return redirect('payment')
+
     else:
-        items =[]
-        order={'get_cart_items':0,'get_cart_total':0}
+        items = []
+        order = {'get_cart_items': 0, 'get_cart_total': 0}
         cartItems = order['get_cart_items']
-        #them ma voucher
         discount_amount = 0
         total_after_discount = 0
-        
-    categories = Category.objects.filter(is_sub =False)  
-    
-    context={'items':items,'order':order,'cartItems':cartItems, 'categories':categories,'discount_amount':discount_amount, 'total_after_discount':total_after_discount}
-    
+        existing_shipping = None
+
+    categories = Category.objects.filter(is_sub=False)
+
+    context = {
+        'items': items,
+        'order': order,
+        'cartItems': cartItems,
+        'categories': categories,
+        'discount_amount': discount_amount,
+        'total_after_discount': total_after_discount,
+        'shipping_address': existing_shipping
+    }
+
     return render(request, 'app/checkout.html', context)
+
 def updateItem(request):
     data = json.loads(request.body)
     productId = data['productId']
@@ -285,7 +307,6 @@ def payment(request):
         context={'items':items,'order':order,'cartItems':cartItems,'discount_amount':discount_amount,'total_after_discount':total_after_discount,'title': "Thanh toán"}
         return render(request, "payment/payment.html",context )
 
-
 def payment_ipn(request):
     inputData = request.GET
     if inputData:
@@ -339,13 +360,9 @@ def payment_return(request):
         order_desc = inputData['vnp_OrderInfo']
         vnp_TransactionNo = inputData['vnp_TransactionNo']
         vnp_ResponseCode = inputData['vnp_ResponseCode']
-        vnp_TmnCode = inputData['vnp_TmnCode']
-        vnp_PayDate = inputData['vnp_PayDate']
-        vnp_BankCode = inputData['vnp_BankCode']
-        vnp_CardType = inputData['vnp_CardType']
 
-        # Lưu thông tin thanh toán
-        payment = Payment_VNPay.objects.create(
+        # Lưu log thanh toán
+        Payment_VNPay.objects.create(
             order_id=order_id,
             amount=amount,
             order_desc=order_desc,
@@ -356,18 +373,25 @@ def payment_return(request):
         if vnp.validate_response(settings.VNPAY_HASH_SECRET_KEY):
             if vnp_ResponseCode == "00":
                 if request.user.is_authenticated:
+                    # Lấy đơn hàng hiện tại (status: complete=False)
                     order = Order.objects.filter(customer=request.user, complete=False).first()
                     if order:
-                        OrderItem.objects.filter(order=order).delete()
-                        order.delete()
-                        messages.success(request, "Giỏ hàng đã được xóa.")
+                        # Đánh dấu đơn đã hoàn tất
+                        order.complete = True
+                        order.save()
+
+                        # Tạo giỏ hàng mới cho user (trống)
+                        Order.objects.create(customer=request.user, complete=False)
+
                     # Gửi email
                     subject = f'Thanh toán hóa đơn {order_id} thành công'
-                    body = f'Mã hóa đơn: {order_id}\nSố tiền: {amount}\nNội dung thanh toán: {order_desc}'
-                    user_email = request.user.email
-                    send_mail(subject, body, 'your_email@gmail.com', [user_email])  
+                    body = (
+                        f'Mã hóa đơn: {order_id}\n'
+                        f'Số tiền: {amount}\n'
+                        f'Nội dung thanh toán: {order_desc}'
+                    )
+                    send_mail(subject, body, 'huydat13825@gmail.com', [request.user.email])
 
-                
                 return render(request, "payment/payment_return.html", {
                     "title": "Kết quả thanh toán",
                     "result": "Thành công",
@@ -377,6 +401,8 @@ def payment_return(request):
                     "vnp_TransactionNo": vnp_TransactionNo,
                     "vnp_ResponseCode": vnp_ResponseCode
                 })
+
+            # ❌ Thanh toán thất bại
             else:
                 return render(request, "payment/payment_return.html", {
                     "title": "Kết quả thanh toán",
@@ -387,22 +413,21 @@ def payment_return(request):
                     "vnp_TransactionNo": vnp_TransactionNo,
                     "vnp_ResponseCode": vnp_ResponseCode
                 })
-        else:
-            return render(request, "payment/payment_return.html", {
-                "title": "Kết quả thanh toán",
-                "result": "Lỗi",
-                "order_id": order_id,
-                "amount": amount,
-                "order_desc": order_desc,
-                "vnp_TransactionNo": vnp_TransactionNo,
-                "vnp_ResponseCode": vnp_ResponseCode,
-                "msg": "Sai checksum"
-            })
-    else:
+
+        # Sai checksum
         return render(request, "payment/payment_return.html", {
             "title": "Kết quả thanh toán",
-            "result": ""
+            "result": "Lỗi - Sai checksum"
         })
+
+    # Không có input đầu vào
+    return render(request, "payment/payment_return.html", {
+        "title": "Kết quả thanh toán",
+        "result": ""
+    })
+
+
+
 
 
 def get_client_ip(request):
@@ -532,10 +557,6 @@ def payment_success(request):
         if vnp_ResponseCode == '00':
             if request.user.is_authenticated:
                 order = Order.objects.filter(customer=request.user, complete=False).first()
-                if order:
-                    OrderItem.objects.filter(order=order).delete()  
-                    order.delete()  
-                    messages.success(request, "Giỏ hàng đã được xóa.")
             return redirect('home') 
         else:
             messages.error(request, "Thanh toán không thành công.")
@@ -621,3 +642,164 @@ def apply_voucher(request):
         messages.success(request, f"Voucher applied! You saved {order.discount_amount} VNĐ.")
 
     return redirect('cart')
+
+@login_required
+def order_history(request):
+    """Hiển thị danh sách các đơn hàng đã hoàn tất của người dùng."""
+    customer = request.user
+    # Lấy TẤT CẢ các đơn hàng ĐÃ HOÀN TẤT (complete=True) và sắp xếp theo ngày mới nhất
+    orders = Order.objects.filter(customer=customer, complete=True).order_by('-date_ordered')
+    
+    context = {
+        'orders': orders,
+        'title': 'Lịch sử Đơn hàng'
+    }
+    return render(request, 'app/order_history.html', context)
+from django.shortcuts import render, redirect, get_object_or_404
+@login_required
+def order_detail(request, order_id):
+    """Hiển thị chi tiết một đơn hàng cụ thể."""
+    # Dùng get_object_or_404 để trả về lỗi 404 nếu không tìm thấy đơn hàng
+    order = get_object_or_404(Order, id=order_id, customer=request.user)
+    
+    # Lấy tất cả OrderItem (sản phẩm) thuộc về đơn hàng này
+    items = order.orderitem_set.all()
+    
+    context = {
+        'order': order,
+        'items': items,
+        'title': f'Chi tiết Đơn hàng #{order.id}'
+    }
+    return render(request, 'app/order_detail.html', context)
+
+from django.db.models import Sum
+from django.db.models.functions import ExtractMonth
+from django.contrib.auth.decorators import login_required
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import F
+
+# ... (các hàm view khác) ...
+
+@login_required
+def sales_dashboard(request):
+    """Hiển thị dashboard thống kê số lượng sản phẩm bán ra theo tháng."""
+    
+    # Lấy dữ liệu bán hàng
+    sales_data_query = OrderItem.objects.filter(
+    order__complete=True
+    ).annotate(
+    month_num=ExtractMonth('order__date_order')
+    ).values('month_num', product_name=F('product__name')).annotate(
+    total_quantity=Sum('quantity')
+    ).order_by('month_num')
+
+    # Chuyển QuerySet sang list và sau đó sang JSON string
+    sales_data_list = list(sales_data_query)
+    sales_data_json = json.dumps(sales_data_list, cls=DjangoJSONEncoder)
+    
+    context = {
+        'sales_data_json': sales_data_json, # Dữ liệu JSON để JS sử dụng
+        'title': 'Báo Cáo Thống Kê Bán Hàng'
+    }
+    return render(request, 'app/sales_dashboard.html', context)
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import ChatMessage, User
+
+@login_required
+def chat_page(request):
+    admin_user = User.objects.get(username="admin")
+    return render(request, "app/chat.html", {"admin": admin_user})
+
+@login_required
+def send_message(request):
+    if request.method == "POST":
+        msg = request.POST.get("message")
+        admin_user = User.objects.get(username="admin")
+        ChatMessage.objects.create(
+            sender=request.user,
+            receiver=admin_user,
+            message=msg
+        )
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "error"})
+
+@login_required
+def load_messages(request):
+    """
+    Nếu admin load, cần truyền user_id để xem chat với khách hàng nào
+    """
+    if request.user.username == "admin":
+        user_id = request.GET.get("user_id")
+        if not user_id:
+            return JsonResponse([], safe=False)
+        other_user = User.objects.get(id=user_id)
+        messages = ChatMessage.objects.filter(
+            sender__in=[other_user, request.user],
+            receiver__in=[other_user, request.user]
+        ).order_by("timestamp")
+    else:
+        admin_user = User.objects.get(username="admin")
+        messages = ChatMessage.objects.filter(
+            sender__in=[request.user, admin_user],
+            receiver__in=[request.user, admin_user]
+        ).order_by("timestamp")
+
+    data = [
+        {
+            "sender": msg.sender.username,
+            "message": msg.message,
+            "time": msg.timestamp.strftime("%H:%M %d-%m")
+        }
+        for msg in messages
+    ]
+    return JsonResponse(data, safe=False)
+
+@login_required
+def admin_chat_page(request):
+    if not request.user.is_staff:
+        return redirect("home")
+    users = User.objects.exclude(username="admin")
+    return render(request, "app/admin_chat.html", {"users": users})
+
+from django.contrib.admin.views.decorators import staff_member_required
+
+@staff_member_required
+def admin_manage_orders(request):
+    orders = Order.objects.all().order_by('-id')
+
+    if request.method == "POST":
+        for order in orders:
+            new_status = request.POST.get(f"status_{order.id}")
+            if new_status:
+                order.status = new_status
+                order.save()
+        return redirect('admin_manage_orders')
+
+    return render(request, "app/admin_manage_orders.html", {"orders": orders})
+
+
+@login_required
+def my_orders(request):
+    orders = Order.objects.filter(customer=request.user)
+    return render(request, "app/user_orders.html", {"orders": orders})
+
+@login_required
+def confirm_received(request, order_id):
+    order = Order.objects.get(id=order_id, customer=request.user)
+
+    if order.status == 'delivered':
+        order.status = 'completed'
+        order.save()
+
+    return redirect('my_orders')
+
+@staff_member_required
+def admin_update_status_single(request, order_id):
+    order = Order.objects.get(id=order_id)
+    if request.method == "POST":
+        order.status = request.POST.get("status")
+        order.save()
+    return redirect('admin_manage_orders')
+

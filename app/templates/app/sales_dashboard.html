@@ -1,0 +1,109 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block main-content %}
+<div class="container my-5" style="padding-top: 50px; padding-bottom=50px; " >
+    <div class="row">
+        <h3 class="mb-4">{{ title }}</h3>
+        <p class="text-muted">Thống kê số lượng sản phẩm bán được trong các đơn hàng đã hoàn tất.</p>
+        <hr>
+
+        <div class="row">
+
+            {# Biểu đồ 2: Tháng 12 #}
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">Phân Bố Sản Phẩm: THÁNG 12</div>
+                    <div class="card-body">
+                        <canvas id="pieChartMonth12"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Link thư viện Chart.js (Cần cài đặt/download file này nếu chưa có) #}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script> 
+
+<script>
+    // Nhận dữ liệu JSON từ Backend
+    const SALES_DATA = JSON.parse('{{ sales_data_json|safe }}');
+
+    // Hàm chuyển đổi dữ liệu thành định dạng phù hợp cho Chart.js
+    function prepareDataForMonth(data, monthNum) {
+        const monthData = data.filter(item => item.month_num === monthNum);
+        
+        // Tạo mapping từ tên sản phẩm đến số lượng
+        const productData = {};
+        monthData.forEach(item => {
+            productData[item.product_name] = item.total_quantity;
+        });
+
+        return {
+            labels: Object.keys(productData),
+            quantities: Object.values(productData)
+        };
+    }
+
+    // Định nghĩa màu sắc cho biểu đồ
+    const COLORS = [
+        '#3ac47d', // Green
+        '#f7b924', // Yellow
+        '#007bff', // Blue
+        '#d92550', // Red
+        '#3f6ad8', // Indigo
+        '#6c757d', // Gray
+    ];
+
+    function createPieChart(chartId, monthName, data) {
+        if (!data.labels.length) {
+            document.getElementById(chartId).parentElement.innerHTML = `<p class="text-center">Chưa có dữ liệu bán hàng trong ${monthName}.</p>`;
+            return;
+        }
+
+        new Chart(document.getElementById(chartId).getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.quantities,
+                    backgroundColor: COLORS.slice(0, data.labels.length),
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: `Phân bố sản phẩm bán ra ${monthName}`
+                    },
+                    tooltip: {
+                         callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += context.parsed + ' đơn vị';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Chuẩn bị dữ liệu cho Tháng 2 và Tháng 12
+    const dataMonth2 = prepareDataForMonth(SALES_DATA, 2);
+    const dataMonth12 = prepareDataForMonth(SALES_DATA, 12);
+    
+    createPieChart('pieChartMonth12', 'Tháng 12', dataMonth12);
+</script>
+{% endblock main-content %}

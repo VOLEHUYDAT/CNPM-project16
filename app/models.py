@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+import uuid
 from django import forms
 #Category
 class Category(models.Model):
@@ -48,23 +49,40 @@ class Voucher(models.Model):
         return f"{self.code} - {self.discount_amount} VNĐ"
 
 class Order(models.Model):
-    customer = models.ForeignKey(User,on_delete=models.SET_NULL,blank=True,null=True)
-    date_order = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(max_length=200,null=True,blank=False)
-    complete = models.BooleanField(default=False,null=True,blank=False)
-    transaction_id = models.CharField(max_length=200,null=True)
 
-    #mã voucher
+    STATUS_CHOICES = [
+        ('processing', 'Đang xử lý'),
+        ('shipping', 'Đang giao'),
+        ('delivered', 'Đã giao'),
+        ('completed', 'Hoàn thành'),
+    ]
+
+    customer = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    date_order = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=200, null=True, blank=False)
+    complete = models.BooleanField(default=False, null=True, blank=False)
+    transaction_id = models.CharField(max_length=200, null=True)
+
+    # Trạng thái đơn hàng
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='processing'
+    )
+
+    # mã voucher
     voucher = models.ForeignKey(Voucher, on_delete=models.SET_NULL, blank=True, null=True)
-    discount_amount = models.FloatField(default=0)  # 🛠 Lưu số tiền giảm giá
+    discount_amount = models.FloatField(default=0)
 
     def __str__(self):
         return str(self.id)
+
     @property
     def get_cart_items(self):
         orderitems = self.orderitem_set.all()
         total = sum([item.quantity for item in orderitems])
         return total
+
     @property
     def get_cart_total(self):
         orderitems = self.orderitem_set.all()
@@ -122,5 +140,14 @@ class ReviewRating(models.Model):
     def __str__(self):
         return self.subject
 
+class ChatMessage(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages')
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender.username} → {self.receiver.username}: {self.message[:20]}"
+# --- /Chat AI ---
 
 

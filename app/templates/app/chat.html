@@ -1,0 +1,53 @@
+{% extends 'app/base.html' %}
+{% block chat %}
+
+<div style="padding-top:100px; max-width:700px; margin:auto;">
+    <h3>💬 Chat với Admin</h3>
+
+    <div id="chat-box" 
+         style="height:350px; border:1px solid #ccc; padding:10px; overflow-y:scroll; background:white;">
+    </div>
+
+    <form id="chat-form" method="POST">
+        {% csrf_token %}
+        <textarea id="message" class="form-control" placeholder="Nhập tin nhắn..." required></textarea>
+        <button type="submit" class="btn btn-success mt-2">Gửi</button>
+    </form>
+</div>
+
+<script>
+function loadMessages() {
+    $.get("{% url 'load_messages' %}", function(data) {
+        let box = $("#chat-box");
+        box.html("");
+
+        data.forEach(msg => {
+            let align = msg.sender === "{{request.user.username}}" ? "right" : "left";
+            box.append(`
+                <p style="text-align:${align}">
+                    <strong>${msg.sender}:</strong> ${msg.message} <br>
+                    <small>${msg.time}</small>
+                </p>
+            `);
+        });
+
+        box.scrollTop(box[0].scrollHeight);
+    });
+}
+
+$("#chat-form").submit(function(e) {
+    e.preventDefault();
+    $.post("{% url 'send_message' %}", {
+        message: $("#message").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+    }, function() {
+        $("#message").val("");
+        loadMessages();
+    });
+});
+
+setInterval(loadMessages, 1500); // tải mới mỗi 1.5s
+loadMessages();
+</script>
+
+{% endblock %}

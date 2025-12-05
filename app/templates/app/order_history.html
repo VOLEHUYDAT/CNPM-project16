@@ -1,0 +1,47 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <h3 class="mb-4">Lịch sử Đơn hàng đã đặt</h3>
+        <hr>
+        {% if orders %}
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Mã Đơn hàng</th>
+                        <th scope="col">Ngày đặt hàng</th>
+                        <th scope="col">Tổng tiền</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.date_ordered|date:"d/m/Y H:i" }}</td>
+                        <td>{{ order.get_cart_total|intcomma }} VNĐ</td>
+                        <td>
+                            {% if order.complete %}
+                                <span class="badge bg-success">Đã hoàn tất</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Đang chờ xử lý</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-info">Xem chi tiết</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                Bạn chưa có đơn hàng nào được hoàn tất.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

@@ -13,9 +13,8 @@
             </div>
             <div class="form-group">
                 <label for="order_id">Mã hóa đơn</label>
-                <input class="form-control" id="order_id"
-                       name="order_id" type="text" value="{% now 'YmdHis' %}"/>
-            </div>
+            <input class="form-control" id="order_id" name="order_id" type="text" value="{% now 'YmdHis' %}"/> 
+</div>
             <!--mã voucher-->
             <!-- Hiển thị số tiền giảm nếu có -->
             {% if discount_amount > 0 %}

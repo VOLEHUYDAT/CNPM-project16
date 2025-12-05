@@ -1,0 +1,21 @@
+/* Đổi màu nền thanh header Django Admin */
+#header {
+    background: #007bff; /* Màu xanh dương (tương tự màu Primary của Bootstrap) */
+    color: white;
+}
+
+/* Đổi màu chữ tên website */
+#site-name a {
+    color: #ffffff;
+}
+
+/* Đổi màu khi hover */
+#user-tools a:hover {
+    color: #f0f0f0;
+}
+
+/* Tăng kích thước tiêu đề chính */
+#site-name {
+    font-size: 1.5em;
+    font-weight: bold;
+}
