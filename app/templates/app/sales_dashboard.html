@@ -1,42 +1,64 @@
 {% extends 'app/base.html' %}
 {% load static %}
 {% load humanize %}
-{% block main-content %}
-<div class="container my-5" style="padding-top: 50px; padding-bottom=50px; " >
+
+{% block sales_dashboard %}
+<div class="container my-5" style="padding-top: 50px;">
     <div class="row">
         <h3 class="mb-4">{{ title }}</h3>
-        <p class="text-muted">Thống kê số lượng sản phẩm bán được trong các đơn hàng đã hoàn tất.</p>
+        <p class="text-muted">Thống kê số lượng sản phẩm bán được theo tháng.</p>
         <hr>
 
-        <div class="row">
+        <!-- Bộ lọc thời gian -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <label>Chọn tháng:</label>
+                <select id="monthSelect" class="form-select">
+                    <option value="">-- Chọn tháng --</option>
+                    {% for m in months %}
+                        <option value="{{ m }}">Tháng {{ m }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-            {# Biểu đồ 2: Tháng 12 #}
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-header">Phân Bố Sản Phẩm: THÁNG 12</div>
-                    <div class="card-body">
-                        <canvas id="pieChartMonth12"></canvas>
-                    </div>
+            <div class="col-md-3">
+                <label>Chọn năm:</label>
+                <select id="yearSelect" class="form-select">
+                    {% for y in years %}
+                        <option value="{{ y }}">{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Biểu đồ -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header text-center fw-bold">Biểu đồ thống kê sản phẩm</div>
+                <div class="card-body">
+                    <canvas id="pieChart"></canvas>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
-{# Link thư viện Chart.js (Cần cài đặt/download file này nếu chưa có) #}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script> 
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <script>
-    // Nhận dữ liệu JSON từ Backend
-    const SALES_DATA = JSON.parse('{{ sales_data_json|safe }}');
+    // Nhận dữ liệu JSON từ backend
+    const SALES_DATA = JSON.parse(`{{ sales_data_json|escapejs }}`);
 
-    // Hàm chuyển đổi dữ liệu thành định dạng phù hợp cho Chart.js
-    function prepareDataForMonth(data, monthNum) {
-        const monthData = data.filter(item => item.month_num === monthNum);
-        
-        // Tạo mapping từ tên sản phẩm đến số lượng
+    // Chuẩn hóa dữ liệu theo tháng/năm
+    function prepareData(month, year) {
+        const filtered = SALES_DATA.filter(
+            item => item.month_num == month && item.year_num == year
+        );
+
         const productData = {};
-        monthData.forEach(item => {
+        filtered.forEach(item => {
             productData[item.product_name] = item.total_quantity;
         });
 
@@ -46,65 +68,54 @@
         };
     }
 
-    // Định nghĩa màu sắc cho biểu đồ
-    const COLORS = [
-        '#3ac47d', // Green
-        '#f7b924', // Yellow
-        '#007bff', // Blue
-        '#d92550', // Red
-        '#3f6ad8', // Indigo
-        '#6c757d', // Gray
-    ];
+    const COLORS = ['#3ac47d', '#f7b924', '#007bff', '#d92550', '#3f6ad8', '#6c757d'];
 
-    function createPieChart(chartId, monthName, data) {
-        if (!data.labels.length) {
-            document.getElementById(chartId).parentElement.innerHTML = `<p class="text-center">Chưa có dữ liệu bán hàng trong ${monthName}.</p>`;
-            return;
-        }
+    let chartInstance = null;
 
-        new Chart(document.getElementById(chartId).getContext('2d'), {
-            type: 'pie',
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    data: data.quantities,
-                    backgroundColor: COLORS.slice(0, data.labels.length),
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: `Phân bố sản phẩm bán ra ${monthName}`
-                    },
-                    tooltip: {
-                         callbacks: {
-                            label: function(context) {
-                                let label = context.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed !== null) {
-                                    label += context.parsed + ' đơn vị';
-                                }
-                                return label;
-                            }
+    function updateChart() {
+        const month = document.getElementById("monthSelect").value;
+        const year = document.getElementById("yearSelect").value;
+
+        if (!month || !year) return;
+
+        const data = prepareData(month, year);
+
+        if (chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(
+            document.getElementById('pieChart'),
+            {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.quantities,
+                        backgroundColor: COLORS.slice(0, data.labels.length)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Sản phẩm bán ra tháng ${month}/${year}`
                         }
                     }
                 }
             }
-        });
+        );
     }
 
-    // Chuẩn bị dữ liệu cho Tháng 2 và Tháng 12
-    const dataMonth2 = prepareDataForMonth(SALES_DATA, 2);
-    const dataMonth12 = prepareDataForMonth(SALES_DATA, 12);
-    
-    createPieChart('pieChartMonth12', 'Tháng 12', dataMonth12);
+    // Sự kiện thay đổi
+    document.getElementById("monthSelect").addEventListener("change", updateChart);
+    document.getElementById("yearSelect").addEventListener("change", updateChart);
+
+    // Tự động set tháng/năm hiện tại và render
+    const now = new Date();
+    document.getElementById("monthSelect").value = now.getMonth() + 1;
+    document.getElementById("yearSelect").value = now.getFullYear();
+
+    updateChart();
 </script>
-{% endblock main-content %}
+
+{% endblock sales_dashboard %}

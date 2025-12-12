@@ -685,7 +685,8 @@ def order_detail(request, order_id):
     return render(request, 'app/order_detail.html', context)
 
 from django.db.models import Sum
-from django.db.models.functions import ExtractMonth
+from django.db.models.functions import ExtractMonth, ExtractYear
+import json
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import F
@@ -695,19 +696,28 @@ from django.db.models import F
 @login_required
 def sales_dashboard(request):
     """Hiển thị dashboard thống kê số lượng sản phẩm bán ra theo tháng."""
-    
-    # Lấy dữ liệu bán hàng
-    sales_data_query = OrderItem.objects.filter(
-    order__complete=True
-    ).annotate(
-    month_num=ExtractMonth('order__date_order')
-    ).values('month_num', product_name=F('product__name')).annotate(
-    total_quantity=Sum('quantity')
-    ).order_by('month_num')
 
-    # Chuyển QuerySet sang list và sau đó sang JSON string
+    # Lấy dữ liệu bán hàng theo từng tháng + năm
+    sales_data_query = (
+        OrderItem.objects.filter(order__complete=True)
+        .annotate(
+            month_num=ExtractMonth('order__date_order'),
+            year_num=ExtractYear('order__date_order')
+        )
+        .values(
+            'month_num',
+            'year_num',
+            product_name=F('product__name')
+        )
+        .annotate(total_quantity=Sum('quantity'))
+        .order_by('year_num', 'month_num')
+    )
+
+    # Chuyển QuerySet → JSON để gửi sang frontend
     sales_data_list = list(sales_data_query)
     sales_data_json = json.dumps(sales_data_list, cls=DjangoJSONEncoder)
+
+    # Lấy thông tin giỏ hàng
     if request.user.is_authenticated:
         customer = request.user
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
@@ -719,15 +729,25 @@ def sales_dashboard(request):
         cartItems = 0
 
     categories = Category.objects.filter(is_sub=False)
-    
+
+    # Danh sách tháng / năm để user lựa chọn
+    current_year = datetime.now().year
+
     context = {
-        'sales_data_json': sales_data_json, # Dữ liệu JSON để JS sử dụng
         'title': 'Báo Cáo Thống Kê Bán Hàng',
+        'categories': categories,
         'items': items,
         'cartItems': cartItems,
-        'categories': categories,
-        'order': order
+        'order': order,
+
+        # Dữ liệu Chart.js
+        'sales_data_json': sales_data_json,
+
+        # Dữ liệu lọc
+        'months': range(1, 13),
+        'years': range(2020, current_year + 1),
     }
+
     return render(request, 'app/sales_dashboard.html', context)
 
 from django.http import JsonResponse
